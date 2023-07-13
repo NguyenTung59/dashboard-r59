@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {logout} from '../actions/auth-action'
-import {createBrowserHistory} from 'history'
 import profile from '../assets/images/profile.jpeg';
 import Switch from '../components/switch';
 import HeaderSearch from '../components/header-search-bar';
@@ -10,7 +9,6 @@ const sidebarHelper = require('../helper/sidebar');
 const storage		=	require('../helper/storage');
 import { NavDropdown, MenuItem } from 'react-bootstrap';
 
-const history = createBrowserHistory()
 const body = document.body
 class Header extends Component {
 	constructor(props){
@@ -120,7 +118,7 @@ class Header extends Component {
 
 	onLogout() {
 		logout(this.props.dispatch);
-		history.push('/login');
+		this.props.history.push('/login');
 	}
 	render() {
 		return (
@@ -136,7 +134,7 @@ class Header extends Component {
 								</button>
 							</li>
 							<li className="hidden-xs">
-								<a className="navbar-brand">React Admin Dashboard</a>
+								<a className="navbar-brand">Admin Dashboard Monitor</a>
 							</li>
 
 							<NavDropdown eventKey={1} title={<img src={profile} />} noCaret className="pull-right has-image nav-image" id="dropdown-profile">

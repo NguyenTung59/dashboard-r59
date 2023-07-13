@@ -101,7 +101,6 @@ class Home extends Component {
 	render() {
 		/* Sparkline is from reducer */
 		const { sparkline } = this.props
-
 		return (
 			<Fragment>
 				<ModuleHeader text="Overview"/>
@@ -159,7 +158,8 @@ class Home extends Component {
 						</div>
 						<div className="dash-widgets">
 							<Row>
-								<Col sm={6} md={3}>
+								{/* analyze wigets for the past 30 days*/}
+								<Col sm={12} md={6}>
 									<div id="site-visits" className="dash-widget-item bgm-teal">
 										<div className="dash-widget-header">
 											<div className="p-20">
@@ -185,7 +185,8 @@ class Home extends Component {
 										</div>
 									</div>
 								</Col>
-								<Col sm={6} md={3}>
+								{/* Best Sellings */}
+								{/* <Col sm={6} md={3}>
 									<div id="best-selling" className="dash-widget-item">
 										<div className="dash-widget-header">
 											<div className="dash-widget-title">Best Sellings</div>
@@ -213,7 +214,8 @@ class Home extends Component {
 											<a className="lv-footer">View All</a>
 										</div>
 									</div>
-								</Col>
+								</Col> */}
+								{/* Recent Items */}
 								<Col sm={12} md={6} lg={6}>
 									<div className="card">
 										<div className="card-header bgm-teal">

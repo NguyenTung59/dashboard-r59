@@ -4,7 +4,7 @@ import { Router, Route, Switch } from 'react-router-dom'
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import allReducers from './reducers';
-// import { AuthProvider } from "./context/auth-provider";
+import { getUser } from './actions/auth-action';
 
 /* Common Component */
 import Header from './common/header';
@@ -24,17 +24,34 @@ class Applayout extends Component {
 		this.state = {
 			state_location: "/",
 			pathname: window.location.pathname,
-			isAuth: false
+			isAuth: store.getState().auth.isAuth
 		}
 	}
-	componentWillMount() {
+	async componentWillMount() {
+		let {auth} = store.getState()
+		if (auth.token && auth.user) {
+				let response = await getUser(store.dispatch, {"token": auth.token});
+// console.log(response, this.state.isAuth)
+				if (!response) {
+					history.push("/login")
+					// this.setState({
+					// 	...this.state,
+					// 	pathname: "/login",
+					// 	isAuth: false
+					// })
+				} 
+				// else {
+				// 	this.setState({
+				// 		...this.state,
+				// 		pathname: window.location.pathname,
+				// 		isAuth: true
+				// 	})
+				// }
+			} else {
+				history.push("/login")
+			}
 		this.unsubscribeFromHistory = history.listen(this.handleLocationChange);
 		this.handleLocationChange(history.location);
-		if (store.getState().auth.access_token && store.getState().auth.user) {
-			this.setState({
-				...this.state,
-				isAuth: true})
-		}
 	}
 	componentWillUnmount() {
 		if (this.unsubscribeFromHistory) this.unsubscribeFromHistory();
@@ -69,7 +86,6 @@ class Applayout extends Component {
 		ga('send', 'pageview');
 	}
 	componentDidMount() {
-		console.log(this.state.isAuth)
 		document.querySelector(".preloader-base").remove()
 	}
 
@@ -80,36 +96,50 @@ class Applayout extends Component {
 					<Router history={history}>
 						<Switch>
 							{routes.notLogged.map((route, index) => (
-								<Route key={index} path={route.path} exact={route.exact} component={route.component} history={history}/>
+								<Route key={index} path={route.path} exact={route.exact} component={route.component}/>
 							))}
 						</Switch>
 					</Router>
 				</Provider>
 			)
 		} else {
-			return (
-				<Provider store={store}>
-					<Router history={history}>
-						<div className="App">
-							<Header />
-							<SideBar state={this.state.state_location} />
-							<main className="container">
-								<Switch>
-									{routes.logged.map((route, index) => (
-										<Route key={index} path={route.path} exact={route.exact} component={route.component} history={history}/>
-										))}
-								</Switch>
-								<footer className="text-center" id="footer">
-									<span className="ng-scope">React Admin Dashboard</span>
-									<ul className="f-menu list-unstyled">
-										<li><a>Home</a></li>
-									</ul>
-								</footer>
-							</main>
-						</div>
-					</Router>
-				</Provider>
-			);
+			// if (this.state.isAuth) {
+				return (
+					<Provider store={store}>
+						<Router history={history}>
+							<div className="App">
+								<Header history={history}/>
+								<SideBar state={this.state.state_location} history={history}/>
+								<main className="container">
+									<Switch>
+										{routes.logged.map((route, index) => (
+											<Route key={index} path={route.path} exact={route.exact} component={route.component}/>
+											))}
+									</Switch>
+									<footer className="text-center" id="footer">
+										<span className="ng-scope">Admin Dashboard Monitor</span>
+										<ul className="f-menu list-unstyled">
+											<li><a>Home</a></li>
+										</ul>
+									</footer>
+								</main>
+							</div>
+						</Router>
+					</Provider>
+				);
+			// } else {
+			// 	return <Provider store={store}>
+			// 		<Router history={history}>
+			// 			<Switch>
+			// 				{routes.notLogged.map((route, index) => 
+			// 					{
+			// 						if (route.path == this.state.pathname )
+			// 						return <Route key={index} path={route.path} exact={route.exact} component={route.component}/>}
+			// 				)}
+			// 			</Switch>
+			// 		</Router>
+			// 	</Provider>
+			// }
 		}
 	}
 }

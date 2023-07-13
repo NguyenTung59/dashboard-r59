@@ -5,7 +5,7 @@ import Ripple from '../components/ripple';
 import { Input } from '../components/input';
 
 // Redux Action
-import { loginUser } from '../actions/auth-action';
+import { loginUser, getUser } from '../actions/auth-action';
 
 class Login extends Component {	
 	constructor(props) {
@@ -13,6 +13,19 @@ class Login extends Component {
 		this.state = {
 			email: "tungnmac@gmail.com",
 			password: "123456tungnm"
+		}
+	}
+
+	async componentWillMount() {
+		let {auth} = this.props
+		if (auth.token && auth.user) {
+			try {
+				let response = await getUser(this.props.dispatch, {"token": auth.token});
+				if (!response) return;
+				this.props.history.push('/');
+			} catch (error) {
+				console.log(error);
+			}
 		}
 	}
 
@@ -35,6 +48,8 @@ class Login extends Component {
 	}
 
 	render() {
+		// const { auth } = this.props
+		// console.log(auth)
 		return(
 			<div className="container-fluid">
 				<div className="login-container">

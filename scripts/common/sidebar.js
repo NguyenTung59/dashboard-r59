@@ -75,19 +75,20 @@ class SideBar extends Component {
 
 	onLogout() {
 		logout(this.props.dispatch);
-		console.log(this.props)
-		history.push('/login');
+		this.props.history.push('/login');
 	}
 
 	render() {
+		const { users } = this.props
+		console.log(users)
 		return (
 			<Fragment>
 				<aside id="sidebarContainer">
 					<Ripple type="div" className="aside-profile" onClick={this.dropheader.bind(this)}>
 						<img src={profile}/>
 						<div className="labeled">
-							<div className="name ellipsis">Rowel de Guzman</div>
-							<div className="email ellipsis">rowel.deguzman@roweldev.com</div>
+							<div className="name ellipsis">{users.user.name}</div>
+							<div className="email ellipsis">{users.user.email}</div>
 						</div>
 						<div className="header-dropdown-icon">
 							<i className={`${this.state.profile ? "rotate" : ""} zmdi zmdi-chevron-down zmdi-hc-fw`}></i>
@@ -126,6 +127,7 @@ class SideBar extends Component {
 									</div><span>Home</span>
 								</NavLink>
 							</li>
+							{/* Typography */}
 							<li>
 								<NavLink to={`/typography`} activeClassName="active" strict>
 									<div className="icon-circle">
@@ -133,6 +135,7 @@ class SideBar extends Component {
 									</div><span>Typography</span>
 								</NavLink>
 							</li>
+							{/* widgets */}
 							<li className={`${this.state.widgets ? "toggled" : ""} sub-menu`}>
 								
 								<a className={`${this.state.widgets && this.state.location == "widgets" ? "active" : ""} `} onClick={(e) => { this.toggleSubmenu(e) }} name="widgets">
@@ -151,6 +154,7 @@ class SideBar extends Component {
 									</ul>
 								</Collapse>
 							</li>
+							{/* tables */}
 							<li className={`${this.state.tables ? "toggled" : ""} sub-menu`}>
 								<a className={`${this.state.tables && this.state.location == "tables" ? "active" : ""} `} onClick={(e) => { this.toggleSubmenu(e) }} name="tables">
 									<div className="icon-circle">
@@ -168,6 +172,7 @@ class SideBar extends Component {
 									</ul>
 								</Collapse>
 							</li>
+							{/* forms */}
 							<li className={`${this.state.forms  ? "toggled" : ""} sub-menu`}>
 								<a className={`${this.state.forms && this.state.location == "forms" ? "active" : ""} `} onClick={(e) => { this.toggleSubmenu(e) }} name="forms">
 									<div className="icon-circle">
@@ -191,6 +196,7 @@ class SideBar extends Component {
 									</ul>
 								</Collapse>
 							</li>
+							{/* user-interface */}
 							<li className={`${this.state["user-interface"] ? "toggled" : ""} sub-menu`}>
 								<a className={`${this.state["user-interface"] && this.state.location == "user-interface" ? "active" : ""} `} onClick={(e) => { this.toggleSubmenu(e) }} name="user-interface">
 									<div className="icon-circle">
@@ -235,6 +241,7 @@ class SideBar extends Component {
 									</ul>
 								</Collapse>
 							</li>
+							{/* charts */}
 							<li>
 								<NavLink to={`/charts`} strict>
 									<div className="icon-circle">
@@ -242,6 +249,7 @@ class SideBar extends Component {
 									</div><span>Charts</span>
 								</NavLink>
 							</li>
+							{/* gallery */}
 							<li className={`${this.state.gallery ? "toggled" : ""} sub-menu`}>
 								<a className={`${this.state.gallery && this.state.location == "gallery" ? "active" : ""} `} onClick={(e) => { this.toggleSubmenu(e) }} name="gallery">
 									<div className="icon-circle">
@@ -259,6 +267,7 @@ class SideBar extends Component {
 									</ul>
 								</Collapse>
 							</li>
+							{/* Utilities */}
 							<li>
 								<NavLink to={`/utilities`} strict>
 									<div className="icon-circle">
@@ -266,6 +275,7 @@ class SideBar extends Component {
 									</div><span>Utilities</span>
 								</NavLink>
 							</li>
+							{/* sample-pages */}
 							<li className={`${this.state["sample-pages"] ? "toggled" : ""} sub-menu`}>
 								<a className={`${this.state["sample-pages"] && this.state.location == "sample-pages" ? "active" : ""} `} onClick={(e) => { this.toggleSubmenu(e) }} name="sample-pages">
 									<div className="icon-circle">
@@ -313,6 +323,7 @@ class SideBar extends Component {
 									</ul>
 								</Collapse>
 							</li>
+							{/* Multi level menu */}
 							<li className="sub-menu">
 								<a onClick={(e) => { this.toggleSubmenu(e) }} name="level_1">
 									<div className="icon-circle">

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux';
 
 import { Row, Col, Tab } from 'react-bootstrap';
 
@@ -6,7 +7,7 @@ import Ripple from '../../../components/ripple';
 
 const config = require("../../../helper/config").config;
 
-export default class Profile extends Component {
+class Profile extends Component {
 	constructor(props){
 		super(props)
 
@@ -21,6 +22,8 @@ export default class Profile extends Component {
 		});
 	}
 	render() {
+		// const { auth } = this.props
+		// console.log(auth)
 		return(
 			<Row>
 				<Col sm={12}>
@@ -185,3 +188,12 @@ export default class Profile extends Component {
 		)
 	}
 }
+
+function mapStateToProps(state) {
+	return {
+		sparkline: state.sparkline
+	};
+}
+
+
+export default connect(mapStateToProps)(Profile);
