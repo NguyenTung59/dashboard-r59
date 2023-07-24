@@ -1,4 +1,4 @@
-const ROOT_URL = 'http://192.168.14.165:8000/api';
+const ROOT_URL = 'http://192.168.14.165:8000';
 let token = localStorage.getItem('token')
 	? JSON.parse(localStorage.getItem('token'))
 	: '';
@@ -12,7 +12,7 @@ export async function loginUser(dispatch, loginPayload) {
 
 	try {
 		dispatch({ type: 'REQUEST_LOGIN' });
-		let response = await fetch(`${ROOT_URL}/auth/login`, requestOptions);
+		let response = await fetch(`${ROOT_URL}/api/auth/login`, requestOptions);
 		let data = await response.json();
 
 		if (data.user) {
@@ -49,7 +49,7 @@ export async function getUser(dispatch, payload) {
 	};
 
 	try {
-		let response = await fetch(`${ROOT_URL}/users/me`, requestOptions);
+		let response = await fetch(`${ROOT_URL}/api/users/me`, requestOptions);
 		let result = await response.json();
 
 		if (response.status > 200) {

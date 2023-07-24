@@ -23,6 +23,7 @@ class SideBar extends Component {
 		this.state	=	{
 			location: extract_path[1],
 			profile: false,
+			services: extract_path[1] == "services" ? true : false,
 			tables: extract_path[1] == "tables" ? true : false,
 			widgets: extract_path[1] == "widgets" ? true : false,
 			forms: extract_path[1] == "forms" ? true : false,
@@ -41,7 +42,9 @@ class SideBar extends Component {
 			location: extract_path[1]
 		})
 		
-		this.resetState(extract_path[1])
+		if (extract_path[1] != history.location.pathname.toString().split("/")[1]){
+			this.resetState(extract_path[1])
+		}
 	}
 
 	dropheader(){
@@ -57,12 +60,13 @@ class SideBar extends Component {
 	toggleSubmenu(event){
 		let target = event.target.nodeName == "A" ? event.target : helper.parents("A", event.target);
 		target.parentNode.classList.toggle("toggled")
+		// console.log(!this.state[target.name])
 		this.setState({
 			[target.name]: !this.state[target.name]
 		})
 	}
 	resetState(notInclude) {
-		["tables", "widgets", "forms", "user-interface", "gallery", "pages", "level_1", "level_2", "level_3", "level_4"].forEach((e, i) => {
+		["services", "tables", "widgets", "forms", "user-interface", "gallery", "pages", "level_1", "level_2", "level_3", "level_4"].forEach((e, i) => {
 			if (e != notInclude) {
 				this.setState({
 					[e]: false
@@ -80,7 +84,6 @@ class SideBar extends Component {
 
 	render() {
 		const { users } = this.props
-		console.log(users)
 		return (
 			<Fragment>
 				<aside id="sidebarContainer">
@@ -126,6 +129,30 @@ class SideBar extends Component {
 										<i className="zmdi zmdi-home"></i>
 									</div><span>Home</span>
 								</NavLink>
+							</li>
+							{/* Services */}
+							<li className={`${this.state.services ? "toggled" : ""} sub-menu`}>
+								<a className={`${this.state.services && this.state.location == "services" ? "active" : ""} `} onClick={(e) => { this.toggleSubmenu(e) }} name="services">
+									<div className="icon-circle">
+										<i className="zmdi zmdi-dns"></i>
+									</div><span>Services</span>
+								</a>
+								<Collapse in={ this.state.services }>
+									<ul className="list-unstyled">
+										<li>
+											<NavLink className="sub" to={`/services/censor`} activeClassName="active">Censor</NavLink>
+										</li>
+										<li>
+											<NavLink className="sub" to={`/services/cgate`} >Cgate</NavLink>
+										</li>
+										<li>
+											<NavLink className="sub" to={`/services/ai-detect`} >AI Dectect</NavLink>
+										</li>
+										<li>
+											<NavLink className="sub" to={`/services/manager`} >Manager</NavLink>
+										</li>
+									</ul>
+								</Collapse>
 							</li>
 							{/* Typography */}
 							<li>

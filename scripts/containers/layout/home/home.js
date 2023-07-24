@@ -91,13 +91,104 @@ class Home extends Component {
 				y: 85
 			}
 		});
+
+		this.dynamicChart();
 	}
+
 	changeValue(event) {
 		const name = event.target.name
 		this.setState({
 			[name]: event.target.value
 		})
 	}
+
+	dynamicChart() {
+		var data = [],
+			totalPoints = 300,
+			j = 0;
+		function getRandomData() {
+
+			if (data.length > 0)
+				data = data.slice(1);
+			while (data.length < totalPoints) {
+				var prev = data.length > 0 ? data[data.length - 1] : 50,
+					y = prev + Math.random() * 10 - 5;
+
+				if (y < 0) {
+					y = 0;
+				} else if (y > 90) {
+					y = 90;
+				}
+				data.push(y);
+			}
+			var res = [];
+			for (var i = 0; i < data.length; ++i) {
+				res.push([j++, data[i]])
+			}
+
+			return res;
+		}
+		var updateInterval = 30;
+		var plot = $.plot("#dynamic-chart", [getRandomData()], {
+			series: {
+				label: "Server Process Data",
+				lines: {
+					show: true,
+					lineWidth: 0.2,
+					fill: 0.6
+				},
+
+				color: '#00BCD4',
+				shadowSize: 0
+			},
+			yaxis: {
+				min: 0,
+				max: 100,
+				tickColor: '#eee',
+				font: {
+					lineHeight: 13,
+					style: "normal",
+					color: "#9f9f9f",
+				},
+				shadowSize: 0,
+			},
+			xaxis: {
+				show: true,
+				tickColor: '#eee',
+				font: {
+					lineHeight: 13,
+					style: "normal",
+					color: "#9f9f9f",
+				},
+				shadowSize: 0,
+			},
+			grid: {
+				borderWidth: 1,
+				borderColor: '#eee',
+				labelMargin: 10,
+				hoverable: true,
+				clickable: true,
+				mouseActiveRadius: 6,
+			},
+			legend: {
+				container: '.flc-dynamic',
+				backgroundOpacity: 0.5,
+				noColumns: 0,
+				backgroundColor: "white",
+				lineWidth: 0
+			}
+		});
+
+		function update() {
+			plot.setData([getRandomData()]);
+			plot.setupGrid();
+			plot.draw();
+			setTimeout(update, updateInterval);
+		}
+		update();
+	}
+
+
 	render() {
 		/* Sparkline is from reducer */
 		const { sparkline } = this.props
@@ -261,6 +352,19 @@ class Home extends Component {
 						<div className="form-group">
 							<Input className="form-control input-sm" placeholder="Input Small" name="lastName" onChange={this.changeValue} />
 						</div>
+						<Row>
+						<Col sm={12}>
+						<div className="card">
+							<div className="card-header">
+								<h2>Dynamic Chart</h2>
+							</div>
+							<div className="card-body card-padding">
+								<div id="dynamic-chart" className="flot-chart"></div>
+								<div className="flc-dynamic"></div>
+							</div>
+						</div>
+					</Col>
+					</Row>
 					</div>
 				</div>
 			</Fragment>

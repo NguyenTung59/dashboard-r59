@@ -58,6 +58,34 @@ const routes = {
 			}),
 			exact: true
 		}, {
+			path: "/services/censor",
+			component: Loadable({
+				loader: () => import("./containers/layout/services/censor"),
+				loading: Loading
+			}),
+			exact: true
+		}, {
+			path: "/services/cgate",
+			component: Loadable({
+				loader: () => import("./containers/layout/services/cgate"),
+				loading: Loading
+			}),
+			exact: true
+		}, {
+			path: "/services/ai-detect",
+			component: Loadable({
+				loader: () => import("./containers/layout/services/ai-detect"),
+				loading: Loading
+			}),
+			exact: true
+		},{
+			path: "/services/manager",
+			component: Loadable({
+				loader: () => import("./containers/layout/services/manager"),
+				loading: Loading
+			}),
+			exact: true
+		}, {
 			path: "/typography",
 			component: Loadable({
 				loader: () => import("./containers/layout/typography/typography"),

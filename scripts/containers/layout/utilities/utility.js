@@ -269,3 +269,12 @@ export default class Utility extends Component {
 		)
 	}
 }
+
+export function SecondsToDhms(seconds) {
+  seconds = Number(seconds);
+	if (seconds < 0) {
+		return "0:00:00:00"
+	}
+
+  return (Math.floor(seconds/86400) + ":" + (new Date(seconds * 1000)).toISOString().substr(11, 8))
+}

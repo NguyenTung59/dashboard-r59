@@ -24,29 +24,18 @@ class Applayout extends Component {
 		this.state = {
 			state_location: "/",
 			pathname: window.location.pathname,
-			isAuth: store.getState().auth.isAuth
+			isAuth: store.getState().auth.isAuth,
+			user: store.getState().users.user
 		}
 	}
 	async componentWillMount() {
 		let {auth} = store.getState()
 		if (auth.token && auth.user) {
 				let response = await getUser(store.dispatch, {"token": auth.token});
-// console.log(response, this.state.isAuth)
 				if (!response) {
 					history.push("/login")
-					// this.setState({
-					// 	...this.state,
-					// 	pathname: "/login",
-					// 	isAuth: false
-					// })
 				} 
-				// else {
-				// 	this.setState({
-				// 		...this.state,
-				// 		pathname: window.location.pathname,
-				// 		isAuth: true
-				// 	})
-				// }
+
 			} else {
 				history.push("/login")
 			}
@@ -103,7 +92,6 @@ class Applayout extends Component {
 				</Provider>
 			)
 		} else {
-			// if (this.state.isAuth) {
 				return (
 					<Provider store={store}>
 						<Router history={history}>
@@ -127,19 +115,6 @@ class Applayout extends Component {
 						</Router>
 					</Provider>
 				);
-			// } else {
-			// 	return <Provider store={store}>
-			// 		<Router history={history}>
-			// 			<Switch>
-			// 				{routes.notLogged.map((route, index) => 
-			// 					{
-			// 						if (route.path == this.state.pathname )
-			// 						return <Route key={index} path={route.path} exact={route.exact} component={route.component}/>}
-			// 				)}
-			// 			</Switch>
-			// 		</Router>
-			// 	</Provider>
-			// }
 		}
 	}
 }

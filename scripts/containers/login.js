@@ -16,7 +16,20 @@ class Login extends Component {
 		}
 	}
 
-	async componentWillMount() {
+	// async componentWillMount() {
+	// 	let {auth} = this.props
+	// 	if (auth.token && auth.user) {
+	// 		try {
+	// 			let response = await getUser(this.props.dispatch, {"token": auth.token});
+	// 			if (!response) return;
+	// 			this.props.history.push('/');
+	// 		} catch (error) {
+	// 			console.log(error);
+	// 		}
+	// 	}
+	// }
+
+	async componentWillUnmount() {
 		let {auth} = this.props
 		if (auth.token && auth.user) {
 			try {
@@ -48,8 +61,6 @@ class Login extends Component {
 	}
 
 	render() {
-		// const { auth } = this.props
-		// console.log(auth)
 		return(
 			<div className="container-fluid">
 				<div className="login-container">
