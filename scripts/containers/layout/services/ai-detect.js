@@ -14,7 +14,7 @@ class AIDectect extends Component {
     this.state = {
       system: this.props.cores.system,
 			da: this.props.cores.da,
-      currentAgent: this.props.cores.agents[this.props.cores.idAgentDA],
+      current_agent: this.props.cores.agents[this.props.cores.id_agent_da],
       scheduler: null,
 		}
   }
@@ -22,15 +22,15 @@ class AIDectect extends Component {
   async componentDidMount() {
     let isMounted = true;
     try {
-      // const resSys = await GetSystemInfo(this.props.dispatch, {url: `http://${this.state.currentAgent.ip}:${PORT}`})
+      // const resSys = await GetSystemInfo(this.props.dispatch, {url: `http://${this.state.current_agent.ip}:${PORT}`})
       // if (resSys) {
       //   this.setState({
       //     ...this.state,
       //     system: resSys
       // })}
 
-      let refreshDA = setInterval(async () => {
-        const res = await GetProcessCore(this.props.dispatch, {name: "deep-analyst", url: `http://${this.state.currentAgent.ip}:${PORT}`});
+      let refresh_da = setInterval(async () => {
+        const res = await GetProcessCore(this.props.dispatch, {name: "deep-analyst", url: `http://${this.state.current_agent.ip}:${PORT}`});
         // if (res && isMounted) {
         //   this.setState({
         //     ...this.state,
@@ -40,8 +40,7 @@ class AIDectect extends Component {
       }, 1000);
 
       this.setState({
-        ...this.state,
-        scheduler: refreshDA,
+        scheduler: refresh_da,
       })
     } catch(e) {
       console.log(e);
@@ -57,17 +56,16 @@ class AIDectect extends Component {
     this.props.cores.agents.map((a, i) => {
       if (a.name == hostname) {
         this.setState({
-          ...this.state,
-          currentAgent: a
+          current_agent: a
         })
-        this.props.dispatch({ type: 'GET_CURRENT_AGENT_DA', payload: {idCurrentAgent: i} })
+        this.props.dispatch({ type: 'GET_CURRENT_AGENT_DA', payload: {id_current_agent: i} })
       }
     })
   }
   
   render() {
     const {cores} = this.props
-    const currentDA = cores.da
+    const current_da = cores.da
 
     return (
       <Fragment>
@@ -77,7 +75,7 @@ class AIDectect extends Component {
               <div className="card">
               <div className="card-header ch-alt">
                 <h2>
-                  {currentDA.name.charAt(0).toUpperCase() + currentDA.name.slice(1)} Information
+                  {current_da.name.charAt(0).toUpperCase() + current_da.name.slice(1)} Information
                 </h2>
               </div>
               <div className="card-body card-padding">
@@ -98,20 +96,20 @@ class AIDectect extends Component {
                         <i className="zmdi zmdi-devices"></i> UUID </li>
                       <li className="ng-binding">
                         <i className="zmdi zmdi-desktop-mac"></i> Host Name </li>
-                      <li className="ng-binding">{currentDA.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
+                      <li className="ng-binding">{current_da.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
                       <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(cores.da.runtime)}</li>
                     </ul>
                   </Col>
                   <Col sm={8}>
                     <ul>
-                      <li className="ng-binding"> {currentDA.cpu}</li>
-                      <li className="ng-binding"> {currentDA.ram}</li>
-                      <li className="ng-binding"> {currentDA.total_disk}</li>
-                      <li className="ng-binding"> {currentDA.log_disk}</li>
-                      <li className="ng-binding"> {currentDA.traffic}</li>
-                      <li className="ng-binding"> {currentDA.uuid != "" ? currentDA.uuid : "-"}</li>
-                      <li className="ng-binding"> {currentDA.hostname != "" ? currentDA.hostname : "localhost"}</li>
-                      <li className="ng-binding"> {currentDA.status > 0 ? "Running" : "Stopped"} </li>
+                      <li className="ng-binding"> {current_da.cpu}</li>
+                      <li className="ng-binding"> {current_da.ram}</li>
+                      <li className="ng-binding"> {current_da.total_disk}</li>
+                      <li className="ng-binding"> {current_da.log_disk}</li>
+                      <li className="ng-binding"> {current_da.traffic}</li>
+                      <li className="ng-binding"> {current_da.uuid != "" ? current_da.uuid : "-"}</li>
+                      <li className="ng-binding"> {current_da.hostname != "" ? current_da.hostname : "localhost"}</li>
+                      <li className="ng-binding"> {current_da.status > 0 ? "Running" : "Stopped"} </li>
                       <li className="ng-binding">                     
                         <Col sm={4}> <i className="zmdi zmdi-power"></i></Col>
                         <Col sm={4}> <i className="zmdi zmdi-refresh"></i></Col>
@@ -156,7 +154,7 @@ class AIDectect extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentDA.cpu_usage ? currentDA.cpu_usage : "0.00%"}
+                {current_da.cpu_usage ? current_da.cpu_usage : "0.00%"}
               </div>
             </div>
           </Col>
@@ -168,7 +166,7 @@ class AIDectect extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentDA.memory_usage ? currentDA.memory_usage : "0.00%"}
+                {current_da.memory_usage ? current_da.memory_usage : "0.00%"}
               </div>
             </div>
           </Col>
@@ -180,7 +178,7 @@ class AIDectect extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentDA.disk_usage ? currentDA.disk_usage : "0.00%"}
+                {current_da.disk_usage ? current_da.disk_usage : "0.00%"}
               </div>
             </div>
           </Col>
@@ -192,7 +190,7 @@ class AIDectect extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentDA.traffic_volume ? currentDA.traffic_volume : "0 kb/s"}
+                {current_da.traffic_volume ? current_da.traffic_volume : "0 kb/s"}
               </div>
             </div>
           </Col>

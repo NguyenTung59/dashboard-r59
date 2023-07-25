@@ -38,6 +38,23 @@ hr{
     position: relative;
     display: inline-block;
 }
+
+// customize
+.react-datepicker__time-list{
+    padding: 0;
+}
+
+.react-datepicker__time-container{
+    width: 100px;
+}
+
+.react-datepicker__time-list .react-datepicker__time-list-item {
+    width: 100px;
+    text-align: left;
+}
+
+//
+
 .full-round-txt{
     padding-top: 17%;
     color: #FFF;

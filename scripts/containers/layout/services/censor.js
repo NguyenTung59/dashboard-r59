@@ -3,11 +3,8 @@ import { connect } from 'react-redux';
 import HeaderModule from '../../../common/module-header'
 import {Row, Col, NavDropdown, MenuItem} from 'react-bootstrap'
 import { GetAgents, GetProcessCore, GetSystemInfo } from '../../../actions/core-action';
-// import { Input, Textarea, Select, AddOn, Inputmask, InputDate } from '../../../components/input'
 import {SecondsToDhms} from '../utilities/utility'
-import FormScheduler from '../forms/form-scheduler';
-// import moment from 'moment';
-// import DatePicker from 'react-datepicker';
+import FormSchedulerRefresh from '../forms/form-scheduler-refresh';
 
 // const ROOT_URL = 'http://192.168.14.165:8000';
 const PORT = 8000
@@ -16,22 +13,19 @@ class Censor extends Component {
   constructor(props) {
 		super(props);
     this.state = {
+      service: this.props.cores.service.toUpperCase,
       system: this.props.cores.system,
-			censors: this.props.cores.censor,
-      currentAgent: this.props.cores.agents[this.props.cores.idAgentCensor],
-      scheduler: null,
-      // start_date_blue: moment(),
-			// start_date_input_a: moment(),
+			// censors: this.props.cores.censor,
+      current_agent: this.props.cores.agents[this.props.cores.censor_task.id_agent_censor],
+      init_refresh: null,
+      scheduler: [],
 		}
-
-		// this.handleChange = this.handleChange.bind(this);
-		// this.handleChange_blue	=	this.handleChange_blue.bind(this)
   }
 
   async componentDidMount() {
-    let isMounted = true 
+    // let isMounted = true 
     try {
-      // const resSys = await GetSystemInfo(this.props.dispatch, {url: `http://${this.state.currentAgent.ip}:${PORT}`})
+      // const resSys = await GetSystemInfo(this.props.dispatch, {url: `http://${this.state.current_agent.ip}:${PORT}`})
       // if (resSys) {
       //   this.setState({
       //     ...this.state,
@@ -39,43 +33,73 @@ class Censor extends Component {
       // })}
 
       const agents = await GetAgents(this.props.dispatch)
+      // console.log(agents)
+      // const result = await GetProcessCore(this.props.dispatch, {name: "censor", url: `http://${this.state.current_agent.ip}:${PORT}`});
+      // console.log("result init ", result)
 
-      let refreshCensor = setInterval(async () => {
-        const res = await GetProcessCore(this.props.dispatch, {name: "censor", url: `http://${this.state.currentAgent.ip}:${PORT}`});
-        // console.log(res)
-        console.log("running .... ")
-        // if (res && isMounted) {
-        //   this.setState({
-        //     ...this.state,
-        //     censor: res,
-        //     currentCensor: res[0],
-        //   })
-        // }
+      let refresh_init = setInterval(async () => {
+        // console.log("init running .... ", this.props.cores.timer, this.props.cores.enabled, this.props.cores.check_task)
+        let name = this.props.history.location.pathname.split("/")[2]
+        if (name != "") {
+          this.setState({
+            service: this.props.history.location.pathname.split("/")[2].toUpperCase
+          })
+          this.props.dispatch({type: `SET_NAME_SERVICE`, payload: {service: name}})  
+        }
+
+        // console.log(this.props.cores.censor_task)
+        if (this.props.censor_task.cores.enabled) {
+          if (!this.props.cores.censor_task.check_task) {
+            if (this.props.cores.censor_task.timer == 0 ) {
+              let refresh_censor = setInterval(async () => {
+              // console.log("task running .... ")
+              // const res = await GetProcessCore(this.props.dispatch, {name: "censor", url: `http://${this.state.current_agent.ip}:${PORT}`});
+              // // console.log("res ", res)
+              // this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
+              // }, this.props.cores.censor_task.interval)
+
+              // this.setState({
+              //   scheduler_task: [
+              //     {
+              //       id: refresh_censor,
+              //       name: "refresh_censor"
+              //     }
+              //   ],
+              })
+            }
+          }
+        }
+
       }, 1000);
 
       this.setState({
-        ...this.state,
-        scheduler: refreshCensor,
+        init_refresh: refresh_init
       })
 
     } catch(e) {
       console.log(e);
     }
-    isMounted = false
+    // isMounted = false
   }
 
   componentWillUnmount() {
-    clearInterval(this.state.scheduler)
-  }
+    if (this.state.scheduler_task.length > 0){
+      this.state.scheduler_task.map((task, i) => {
+        clearInterval(task.id)
+      })
+    }
+    clearInterval(this.state.init_refresh)
+    this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
+  } 
 
   onSwitchAgent(hostname, ev){
-    this.props.cores.agents.map((a, i) => {
+    this.props.cores.agents.map(async (a, i) => {
       if (a.name == hostname) {
         this.setState({
-          ...this.state,
-          currentAgent: a
+          current_agent: a
         })
-        this.props.dispatch({ type: 'GET_CURRENT_AGENT_CENSOR', payload: {idCurrentAgent: i} })
+        this.props.dispatch({ type: 'GET_CURRENT_AGENT_CENSOR', payload: {id_current_agent: i} })
+        const res = await GetProcessCore(this.props.dispatch, {name: "censor", url: `http://${a.ip}:${PORT}`});
       }
     })
   }
@@ -92,21 +116,10 @@ class Censor extends Component {
     console.log("config censor")
   }
 
-  // handleChange(date) {
-	// 	this.setState({
-	// 		start_date_input_a: date
-	// 	});
-	// }
-
-	// handleChange_blue(date) {
-	// 	this.setState({
-	// 		start_date_blue: date
-	// 	});
-	// }
-
   render() {
     const {cores} = this.props
-    const currentCensor = cores.censor
+    console.log(cores)
+    const current_censor = cores.censor
     
     return (
       <Fragment>
@@ -116,7 +129,7 @@ class Censor extends Component {
               <div className="card">
               <div className="card-header ch-alt">
                 <h2>
-                  {currentCensor.name.charAt(0).toUpperCase() + currentCensor.name.slice(1)} Information
+                  {current_censor.name.charAt(0).toUpperCase() + current_censor.name.slice(1)} Information
                 </h2>
               </div>
               <div className="card-body card-padding">
@@ -139,21 +152,21 @@ class Censor extends Component {
                         <i className="zmdi zmdi-desktop-mac"></i> Host Name </li>
                       <li className="ng-binding">
                         <i className="zmdi zmdi-assignment"></i> Rule Version </li>
-                      <li className="ng-binding">{currentCensor.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(currentCensor.runtime)}</li>
+                      <li className="ng-binding">{current_censor.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
+                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(current_censor.runtime)}</li>
                     </ul>
                   </Col>
                   <Col sm={8}>
                     <ul>
-                      <li className="ng-binding"> {currentCensor.cpu}</li>
-                      <li className="ng-binding"> {currentCensor.ram}</li>
-                      <li className="ng-binding"> {currentCensor.total_disk}</li>
-                      <li className="ng-binding"> {currentCensor.log_disk}</li>
-                      <li className="ng-binding"> {currentCensor.traffic}</li>
-                      <li className="ng-binding"> {currentCensor.uuid != "" ? currentCensor.uuid : "-"}</li>
-                      <li className="ng-binding"> {currentCensor.hostname != "" ? currentCensor.hostname : "localhost"}</li>
-                      <li className="ng-binding"> {currentCensor.used_rule_version != "" ? currentCensor.used_rule_version : "Waitting"}</li>
-                      <li className="ng-binding"> {currentCensor.status > 0 ? "Running" : "Stopped"} </li>
+                      <li className="ng-binding"> {current_censor.cpu}</li>
+                      <li className="ng-binding"> {current_censor.ram}</li>
+                      <li className="ng-binding"> {current_censor.total_disk}</li>
+                      <li className="ng-binding"> {current_censor.log_disk}</li>
+                      <li className="ng-binding"> {current_censor.traffic}</li>
+                      <li className="ng-binding"> {current_censor.uuid != "" ? current_censor.uuid : "-"}</li>
+                      <li className="ng-binding"> {current_censor.hostname != "" ? current_censor.hostname : "localhost"}</li>
+                      <li className="ng-binding"> {current_censor.used_rule_version != "" ? current_censor.used_rule_version : "Waitting"}</li>
+                      <li className="ng-binding"> {current_censor.status > 0 ? "Running" : "Stopped"} </li>
                       <li className="ng-binding">                     
                         <Col sm={4}> <a onClick={this.turnOffService.bind(this)}><i className="zmdi zmdi-power"></i></a></Col>
                         <Col sm={4}> <a onClick={this.resetService.bind(this)}><i className="zmdi zmdi-refresh"></i></a></Col>
@@ -189,9 +202,8 @@ class Censor extends Component {
               </div>
             </div>
             </Row>
-            <Row>
-              {/* <FormScheduler props={this.props}/> */}
-            </Row>
+            {/* scheduler  */}
+            <FormSchedulerRefresh props/>
           </Col>
 				</Row>
         {/* Performance */}
@@ -207,7 +219,7 @@ class Censor extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentCensor.cpu_usage ? currentCensor.cpu_usage : "0.00%"}
+                {current_censor.cpu_usage ? current_censor.cpu_usage : "0.00%"}
               </div>
             </div>
           </Col>
@@ -219,7 +231,7 @@ class Censor extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentCensor.memory_usage ? currentCensor.memory_usage : "0.00%"}
+                {current_censor.memory_usage ? current_censor.memory_usage : "0.00%"}
               </div>
             </div>
           </Col>
@@ -231,7 +243,7 @@ class Censor extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentCensor.disk_usage ? currentCensor.disk_usage : "0.00%"}
+                {current_censor.disk_usage ? current_censor.disk_usage : "0.00%"}
               </div>
             </div>
           </Col>
@@ -243,7 +255,7 @@ class Censor extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentCensor.traffic_volume ? currentCensor.traffic_volume : "0 kb/s"}
+                {current_censor.traffic_volume ? current_censor.traffic_volume : "0 kb/s"}
               </div>
             </div>
           </Col>
@@ -255,7 +267,7 @@ class Censor extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentCensor.rule_applied_amount}
+                {current_censor.rule_applied_amount}
               </div>
             </div>
           </Col>
@@ -267,7 +279,7 @@ class Censor extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentCensor.fail_rule_amount}
+                {current_censor.fail_rule_amount}
               </div>
             </div>
           </Col>

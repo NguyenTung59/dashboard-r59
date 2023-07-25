@@ -14,7 +14,7 @@ class Cgate extends Component {
     this.state = {
       system: this.props.cores.system,
 			cgate: this.props.cores.cgate,
-      currentAgent: this.props.cores.agents[this.props.cores.idAgentCgate],
+      current_agent: this.props.cores.agents[this.props.cores.id_agent_cgate],
       scheduler: null
 		}
   }
@@ -22,15 +22,15 @@ class Cgate extends Component {
   async componentDidMount() {
     let isMounted = true 
     try {
-      // const resSys = await GetSystemInfo(this.props.dispatch, {url: `http://${this.state.currentAgent.ip}:${PORT}`})
+      // const resSys = await GetSystemInfo(this.props.dispatch, {url: `http://${this.state.current_agent.ip}:${PORT}`})
       // if (resSys) {
       //   this.setState({
       //     ...this.state,
       //     system: resSys
       // })}
 
-      const refreshCgate = setInterval(async () => {
-        const res = await GetProcessCore(this.props.dispatch, {name: "cgate", url: `http://${this.state.currentAgent.ip}:${PORT}`});
+      const refresh_cgate = setInterval(async () => {
+        const res = await GetProcessCore(this.props.dispatch, {name: "cgate", url: `http://${this.state.current_agent.ip}:${PORT}`});
         // if (res && isMounted) {
         //   this.setState({
         //     ...this.state,
@@ -41,7 +41,7 @@ class Cgate extends Component {
 
       this.setState({
         ...this.state,
-        scheduler: refreshCgate,
+        scheduler: refresh_cgate,
       })
 
     } catch(e) {
@@ -59,18 +59,18 @@ class Cgate extends Component {
       if (a.name == hostname) {
         this.setState({
           ...this.state,
-          currentAgent: a
+          current_agent: a
         })
-        this.props.dispatch({ type: 'GET_CURRENT_AGENT_CGATE', payload: {idCurrentAgent: i} })
+        this.props.dispatch({ type: 'GET_CURRENT_AGENT_CGATE', payload: {id_current_agent: i} })
       }
     })
   }
 
   render() {
     const {cores} = this.props
-    const currentCgate = cores.cgate
+    const current_cgate = cores.cgate
 
-    // console.log(currentCgate.traffic_volume)
+    // console.log(current_cgate.traffic_volume)
     return (
       <Fragment>
 				<HeaderModule text="Cgate"/>
@@ -79,7 +79,7 @@ class Cgate extends Component {
               <div className="card">
               <div className="card-header ch-alt">
                 <h2>
-                  {currentCgate.name.charAt(0).toUpperCase() + currentCgate.name.slice(1)} Information
+                  {current_cgate.name.charAt(0).toUpperCase() + current_cgate.name.slice(1)} Information
                 </h2>
               </div>
               <div className="card-body card-padding">
@@ -100,20 +100,20 @@ class Cgate extends Component {
                         <i className="zmdi zmdi-devices"></i> UUID </li>
                       <li className="ng-binding">
                         <i className="zmdi zmdi-desktop-mac"></i> Host Name </li>
-                      <li className="ng-binding">{currentCgate.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
+                      <li className="ng-binding">{current_cgate.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
                       <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(cores.cgate.runtime)}</li>
                     </ul>
                   </Col>
                   <Col sm={8}>
                     <ul>
-                      <li className="ng-binding"> {currentCgate.cpu}</li>
-                      <li className="ng-binding"> {currentCgate.ram}</li>
-                      <li className="ng-binding"> {currentCgate.total_disk}</li>
-                      <li className="ng-binding"> {currentCgate.log_disk}</li>
-                      <li className="ng-binding"> {currentCgate.traffic}</li>
-                      <li className="ng-binding"> {currentCgate.uuid != "" ? currentCgate.uuid : "-"}</li>
-                      <li className="ng-binding"> {currentCgate.hostname != "" ? currentCgate.hostname : "localhost"}</li>
-                      <li className="ng-binding"> {currentCgate.status > 0 ? "Running" : "Stopped"} </li>
+                      <li className="ng-binding"> {current_cgate.cpu}</li>
+                      <li className="ng-binding"> {current_cgate.ram}</li>
+                      <li className="ng-binding"> {current_cgate.total_disk}</li>
+                      <li className="ng-binding"> {current_cgate.log_disk}</li>
+                      <li className="ng-binding"> {current_cgate.traffic}</li>
+                      <li className="ng-binding"> {current_cgate.uuid != "" ? current_cgate.uuid : "-"}</li>
+                      <li className="ng-binding"> {current_cgate.hostname != "" ? current_cgate.hostname : "localhost"}</li>
+                      <li className="ng-binding"> {current_cgate.status > 0 ? "Running" : "Stopped"} </li>
                       <li className="ng-binding">                     
                         <Col sm={4}> <i className="zmdi zmdi-power"></i></Col>
                         <Col sm={4}> <i className="zmdi zmdi-refresh"></i></Col>
@@ -159,7 +159,7 @@ class Cgate extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentCgate.cpu_usage ? currentCgate.cpu_usage : "0.00%"}
+                {current_cgate.cpu_usage ? current_cgate.cpu_usage : "0.00%"}
               </div>
             </div>
           </Col>
@@ -171,7 +171,7 @@ class Cgate extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentCgate.memory_usage ? currentCgate.memory_usage : "0.00%"}
+                {current_cgate.memory_usage ? current_cgate.memory_usage : "0.00%"}
               </div>
             </div>
           </Col>
@@ -183,7 +183,7 @@ class Cgate extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentCgate.disk_usage ? currentCgate.disk_usage : "0.00%"}
+                {current_cgate.disk_usage ? current_cgate.disk_usage : "0.00%"}
               </div>
             </div>
           </Col>
@@ -195,7 +195,7 @@ class Cgate extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {currentCgate.traffic_volume ? currentCgate.traffic_volume : "0 kb/s"}
+                {current_cgate.traffic_volume ? current_cgate.traffic_volume : "0 kb/s"}
               </div>
             </div>
           </Col>

@@ -9,6 +9,7 @@ let token = localStorage.getItem('currentUser')
 export const initialState = {
 	user: '' || user,
 	token: '' || token,
+  service: "censor",
   agents: [
     {
       name: "tungnm-MS-7D82",
@@ -25,11 +26,13 @@ export const initialState = {
       instance_address: ""
     }
   ],
-  idAgentCensor: 0,
-  idAgentCgate: 0,
-  idAgentDA: 0,
-  idAgent: 0,
-  interval: 5000,
+  id_agent_cgate: 0,
+  id_agent_da: 0,
+  id_agent: 0,
+  interval: 2000,
+  timer: 30,
+  enabled: false,
+  check_task: false,
   system: {
     cpu:"4 core",
     ram:"31.13GB",
@@ -40,6 +43,20 @@ export const initialState = {
     cpu_brand:"12th Gen Intel(R) Core(TM) i5-12400",
     hostname:"ubuntusrv",
     uuid:"d759a1a8-a929-0000-0000-000000000000",
+  },
+  censor_task: {
+    id_agent_censor: 0,
+    interval: 1000,
+    timer: 30,
+    enabled: false,
+    check_task: false,
+  },
+  exporter_task: {
+    id_agent_exporter: 0,
+    interval: 2000,
+    timer: 30,
+    enabled: false,
+    check_task: false,
   },
   censor:
     {
@@ -134,7 +151,7 @@ export const initialState = {
       runtime: 4492724
     },
     exporters: [],
-    currentExporter: {
+    current_exporter: {
       pid: 0,
       guid: "",
       port: 0,
@@ -147,7 +164,13 @@ export const initialState = {
 };
 
 export default function CoreReducer(state = initialState, action){
+  console.log(action)
 	switch (action.type) {
+    case 'SET_NAME_SERVICE':
+      return {
+        ...state,
+        service: action.payload.services
+      };
     case 'GET_AGENTS':
 			return {
 				...state,
@@ -171,32 +194,27 @@ export default function CoreReducer(state = initialState, action){
 		case 'GET_DEEP_ANALYST':
 			return {
 				...state,
-				da: action.payload.deepAI
+				da: action.payload.deep_ai
 			};
     case 'GET_PROCESS':
       return {
         ...state,
         process: action.payload.process
       };
-    case 'GET_CURRENT_AGENT_CENSOR':
-      return {
-        ...state,
-				idAgentCensor: action.payload.idCurrentAgent
-      };
     case 'GET_CURRENT_AGENT_CGATE':
       return {
         ...state,
-        idAgentCgate: action.payload.idCurrentAgent
+        id_agent_cgate: action.payload.id_current_agent
       };
     case 'GET_CURRENT_AGENT_DA':
       return {
         ...state,
-        idAgentDA: action.payload.idCurrentAgent
+        id_agent_da: action.payload.id_current_agent
       };
     case 'GET_CURRENT_AGENT':
       return {
         ...state,
-        idAgent: action.payload.idCurrentAgent
+        id_agent: action.payload.id_current_agent
       };
     case 'GET_LIST_EXPORTERS':
       return {
@@ -206,13 +224,114 @@ export default function CoreReducer(state = initialState, action){
     case 'GET_CURRENT_EXPORTER':
       return {
         ...state,
-        currentExporter: action.payload.currentExporter
+        current_exporter: action.payload.current_exporter
       };
     case 'SET_TIME_INTERVAL':
       return {
         ...state,
         interval: action.payload.interval
       };
+    case 'SET_TIMER':
+      return {
+        ...state,
+        timer: action.payload.timer
+      };
+    case 'SET_CHECK_TASK':
+      return {
+        ...state,
+        check_task: action.payload.check_task
+      };
+    case 'SET_ENABLED':
+      return {
+        ...state,
+        enabled: action.payload.enabled
+      };
+    // service censor
+    case 'GET_CURRENT_AGENT_CENSOR':
+      return {
+        ...state,
+				// id_agent_censor: action.payload.id_current_agent,
+        censor_task: {
+          ...state.censor_task,
+          id_agent_censor: action.payload.id_current_agent
+        }
+      };
+    case 'SET_CENSOR_CHECK_TASK':
+      return {
+        ...state,
+        censor_task: {
+          ...state.censor_task,
+          check_task: action.payload.check_task
+        }
+      };
+    case 'SET_CENSOR_TIMER':
+      return {
+        ...state,
+        censor_task: {
+          ...state.censor_task,
+          timer: action.payload.timer
+        }
+      };
+    case 'SET_CENSOR_TIME_INTERVAL':
+      return {
+        ...state,
+        censor_task: {
+          ...state.censor_task,
+          interval: action.payload.interval
+        }
+      };
+    case 'SET_CENSOR_ENABLED':
+      return {
+        ...state,
+        censor_task: {
+          ...state.censor_task,
+          enabled: action.payload.enabled
+        }
+      };
+
+    // manager process 
+    case 'GET_CURRENT_AGENT_EXPORTER':
+      return {
+        ...state,
+        // id_agent_censor: action.payload.id_current_agent,
+        exporter_task: {
+          ...state.exporter_task,
+          id_agent_exporter: action.payload.id_current_agent
+        }
+      };
+    case 'SET_EXPORTER_CHECK_TASK':
+      return {
+        ...state,
+        exporter_task: {
+          ...state.exporter_task,
+          check_task: action.payload.check_task
+        }
+      };
+    case 'SET_EXPORTER_TIMER':
+      return {
+        ...state,
+        exporter_task: {
+          ...state.exporter_task,
+          timer: action.payload.timer
+        }
+      };
+    case 'SET_EXPORTER_TIME_INTERVAL':
+      return {
+        ...state,
+        exporter_task: {
+          ...state.exporter_task,
+          interval: action.payload.interval
+        }
+      };
+    case 'SET_EXPORTER_ENABLED':
+      return {
+        ...state,
+        exporter_task: {
+          ...state.exporter_task,
+          enabled: action.payload.enabled
+        }
+      };
+
 		default:
 			// throw new Error(`Unhandled action type: ${action.type}`);
 			return {

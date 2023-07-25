@@ -79,9 +79,9 @@ const routes = {
 			}),
 			exact: true
 		},{
-			path: "/services/manager",
+			path: "/services/exporter",
 			component: Loadable({
-				loader: () => import("./containers/layout/services/manager"),
+				loader: () => import("./containers/layout/services/exporter"),
 				loading: Loading
 			}),
 			exact: true

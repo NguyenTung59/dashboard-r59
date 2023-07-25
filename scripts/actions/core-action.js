@@ -79,7 +79,7 @@ export async function GetProcessCore(dispatch, payload) {
         }
       case 'deep-analyst':
         if (result.data) {
-          dispatch({ type: 'GET_DEEP_ANALYST', payload: {deepAI: JSON.parse(result.data)} });
+          dispatch({ type: 'GET_DEEP_ANALYST', payload: {deep_ai: JSON.parse(result.data)} });
           return JSON.parse(result.data)
         }
 			default:
