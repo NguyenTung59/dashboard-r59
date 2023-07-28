@@ -3,6 +3,10 @@ import AuthReducer from './auth';
 import UserReducer from './users';
 import SparklineData from './sparkline-data'
 import CoreReducer from './core';
+import CensorReducer from './censor';
+import CgateReducer from './cgate';
+import AIReducer from './ai-detect';
+import MetricsReducer from './metrics';
 
 /*
  * We combine all reducers into a single object before updated data is dispatched (sent) to store
@@ -13,7 +17,11 @@ const allReducers = combineReducers({
 	users: UserReducer,
 	auth: AuthReducer,
 	sparkline: SparklineData,
-	cores: CoreReducer
+	cores: CoreReducer,
+	censors: CensorReducer,
+	cgates: CgateReducer,
+	metrics: MetricsReducer,
+	ai: AIReducer,
 });
 
 export default allReducers

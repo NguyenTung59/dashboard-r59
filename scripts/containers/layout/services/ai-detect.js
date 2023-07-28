@@ -3,8 +3,10 @@ import { connect } from 'react-redux';
 import HeaderModule from '../../../common/module-header'
 
 import {Row, Col} from 'react-bootstrap'
-import { GetProcessCore, GetSystemInfo } from '../../../actions/core-action';
+import { GetProcessCore, GetSystemInfo, GetAgents } from '../../../actions/core-action';
 import {SecondsToDhms} from '../utilities/utility'
+import FormSchedulerRefresh from '../forms/form-scheduler-refresh';
+
 const ROOT_URL = 'http://192.168.14.165:8000';
 const PORT = 8000
 
@@ -12,15 +14,17 @@ class AIDectect extends Component {
   constructor(props) {
 		super(props);
     this.state = {
+      name: "deep-analyst",
+      service: this.props.history.location.pathname.split("/")[2].toUpperCase(),
       system: this.props.cores.system,
-			da: this.props.cores.da,
-      current_agent: this.props.cores.agents[this.props.cores.id_agent_da],
-      scheduler: null,
+			// ais: this.props.cores.ai,
+      current_agent: this.props.cores.agents[this.props.ais.ai_task.id_agent_ai],
+      init_refresh: null,
+      scheduler_task: [],
 		}
   }
 
   async componentDidMount() {
-    let isMounted = true;
     try {
       // const resSys = await GetSystemInfo(this.props.dispatch, {url: `http://${this.state.current_agent.ip}:${PORT}`})
       // if (resSys) {
@@ -29,28 +33,60 @@ class AIDectect extends Component {
       //     system: resSys
       // })}
 
-      let refresh_da = setInterval(async () => {
-        const res = await GetProcessCore(this.props.dispatch, {name: "deep-analyst", url: `http://${this.state.current_agent.ip}:${PORT}`});
-        // if (res && isMounted) {
-        //   this.setState({
-        //     ...this.state,
-        //     da: res
-        //   })
-        // }
+      const agents = await GetAgents(this.props.dispatch)
+      const result = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
+
+      let refresh_init = setInterval(async () => {
+        if (this.props.ais.ai_task.enabled) {
+          if (!this.props.ais.ai_task.check_task) {
+            if (this.props.ais.ai_task.timer == 0 ) {
+              let refresh_ai = setInterval(async () => {
+              // console.log("task running .... ")
+              const res = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
+              // console.log("res ", res)
+              this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
+              }, this.props.ais.ai_task.interval)
+
+              this.setState({
+                scheduler_task: [
+                  ...this.state.scheduler_task,
+                  {
+                    id: refresh_ai,
+                    name: "refresh_ai"
+                  }
+                ],
+              })
+            }
+          }
+        } else {
+          if (this.state.scheduler_task.length > 0){
+            this.state.scheduler_task.map((task, i) => {
+              clearInterval(task.id)
+            })
+          }
+          this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
+        }
+
       }, 1000);
 
       this.setState({
-        scheduler: refresh_da,
+        init_refresh: refresh_init
       })
+
     } catch(e) {
       console.log(e);
     }
-    isMounted = false 
   }
 
   componentWillUnmount() {
-    clearInterval(this.state.scheduler)
-  }
+    if (this.state.scheduler_task.length > 0){
+      this.state.scheduler_task.map((task, i) => {
+        clearInterval(task.id)
+      })
+    }
+    clearInterval(this.state.init_refresh)
+    this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
+  } 
 
   onSwitchAgent(hostname, ev){
     this.props.cores.agents.map((a, i) => {
@@ -62,10 +98,23 @@ class AIDectect extends Component {
       }
     })
   }
+
+  turnOffService() {
+    console.log("turn off deep-analyst ")
+  }
+  
+  resetService() {
+    console.log("reset deep-analyst ")
+  }
+
+  configService() {
+    console.log("config deep-analyst")
+  }
+
   
   render() {
-    const {cores} = this.props
-    const current_da = cores.da
+    const {cores, ais} = this.props
+    const current_da = ais.deep_analyst
 
     return (
       <Fragment>
@@ -97,7 +146,7 @@ class AIDectect extends Component {
                       <li className="ng-binding">
                         <i className="zmdi zmdi-desktop-mac"></i> Host Name </li>
                       <li className="ng-binding">{current_da.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(cores.da.runtime)}</li>
+                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(current_da.runtime)}</li>
                     </ul>
                   </Col>
                   <Col sm={8}>
@@ -111,9 +160,9 @@ class AIDectect extends Component {
                       <li className="ng-binding"> {current_da.hostname != "" ? current_da.hostname : "localhost"}</li>
                       <li className="ng-binding"> {current_da.status > 0 ? "Running" : "Stopped"} </li>
                       <li className="ng-binding">                     
-                        <Col sm={4}> <i className="zmdi zmdi-power"></i></Col>
-                        <Col sm={4}> <i className="zmdi zmdi-refresh"></i></Col>
-                        <Col sm={4}> <i className="zmdi zmdi-wrench"></i></Col> 
+                        <Col sm={4}> <a onClick={this.turnOffService.bind(this)}><i className="zmdi zmdi-power"></i></a></Col>
+                        <Col sm={4}> <a onClick={this.resetService.bind(this)}><i className="zmdi zmdi-refresh"></i></a></Col>
+                        <Col sm={4}> <a onClick={this.configService.bind(this)}><i className="zmdi zmdi-wrench"></i></a></Col> 
                       </li>
                     </ul>
                   </Col>
@@ -125,7 +174,7 @@ class AIDectect extends Component {
             <div className="card">
               <div className="card-header ch-alt">
                 <h2>
-                  List DA
+                  List Agent
                 </h2>
               </div>
               <div className="card-body card-padding">
@@ -142,6 +191,15 @@ class AIDectect extends Component {
                 </Row>
               </div>
             </div>
+            {/* scheduler  */}
+            <FormSchedulerRefresh 
+              location={this.props.location} 
+              service={{
+                interval: this.props.ais.ai_task.interval, 
+                enabled: this.props.ais.ai_task.enabled, 
+                check_task: this.props.ais.ai_task.check_task, 
+                timer: this.props.ais.ai_task.timer, 
+              }}/>
           </Col>
 				</Row>
         <Row>
@@ -203,7 +261,8 @@ class AIDectect extends Component {
 const mapStateToProps = (state) => {
 	return {
     auth: state.auth,
-    cores: state.cores
+    cores: state.cores,
+    ais: state.ai
 	};
 }
 

@@ -149,7 +149,10 @@ class SideBar extends Component {
 											<NavLink className="sub" to={`/services/ai-detect`} >AI Dectect</NavLink>
 										</li>
 										<li>
-											<NavLink className="sub" to={`/services/manager`} >Manager</NavLink>
+											<NavLink className="sub" to={`/services/process`} >Process</NavLink>
+										</li>
+										<li>
+											<NavLink className="sub" to={`/services/exporter`} >Exporters</NavLink>
 										</li>
 									</ul>
 								</Collapse>

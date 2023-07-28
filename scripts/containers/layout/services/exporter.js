@@ -1,18 +1,9 @@
 import React, { Component, Fragment } from 'react'
-// import { DateTimePickerComponent } from 'ej2-react-calendars';
 import { connect } from 'react-redux';
 import HeaderModule from '../../../common/module-header'
-import {Row, Col, Modal, Tooltip, OverlayTrigger} from 'react-bootstrap'
-import { GetAgents, GetProcessCore, GetSystemInfo, GetProcessExporters} from '../../../actions/core-action';
-// import ReactTable from 'react-table'
-// import Switch from '../../../components/switch'
-// import Ripple from '../../../components/ripple';
-// import { Input, Textarea, Select, AddOn, Inputmask, InputDate } from '../../../components/input'
+import {Row, Col} from 'react-bootstrap'
+import { GetAgents, GetSystemInfo, GetProcessExporters} from '../../../actions/core-action';
 import {SecondsToDhms} from '../utilities/utility'
-// import FormScheduler from '../forms/form-scheduler';
-// import moment from 'moment';
-// import DatePicker from 'react-datepicker';
-// import { initialState } from '../../../reducers/core';
 import FormSchedulerRefresh from '../forms/form-scheduler-refresh';
 
 // const ROOT_URL = 'http://192.168.14.165:8000';
@@ -23,33 +14,14 @@ class Manager extends Component {
 		super(props);
 
     this.state = {
-      service: this.props.cores.service.toUpperCase,
+      name: this.props.history.location.pathname.split("/")[2],
+      service: this.props.history.location.pathname.split("/")[2].toUpperCase(),
       system: this.props.cores.system,
-			process: this.props.cores.process,
-      current_agent: this.props.cores.agents[this.props.cores.id_agent],
+      current_agent: this.props.cores.agents[this.props.cores.exporter_task.id_agent],
       current_exporter: this.props.cores.current_exporter,
       exporters: this.props.cores.exporters,
-      interval: this.props.cores.exporter_task.interval,
-      enabled: this.props.cores.exporter_task.enabled,
-      check_task: this.props.cores.exporter_task.check_task,
-      scheduler_task: [],
-      default_with_size: {
-				show: false,
-				size: "lg",
-				title: "Scheduler"
-			},
-      start_date_blue: new Date(),
-			start_date_input_a: new Date(),
-      timer: this.props.cores.timer
+      scheduler_task: []
 		}
-
-    // this.openDefault = this.openDefault.bind(this);
-		// this.closeDefault = this.closeDefault.bind(this);
-
-		// this.handleChange = this.handleChange.bind(this);
-		// this.handleChange_blue	=	this.handleChange_blue.bind(this)
-		// this.handleChangeInterval	=	this.handleChangeInterval.bind(this)
-		// this.onEnableScheduler	=	this.onEnableScheduler.bind(this)
   }
 
   async componentDidMount() {
@@ -63,56 +35,34 @@ class Manager extends Component {
       const agents = await GetAgents(this.props.dispatch)
       const list_exporters = await GetProcessExporters(this.props.dispatch, {url: `http://${this.state.current_agent.ip}:${PORT}`})
 
-      // let countdown_timer = setInterval(() => {
-      //   let now = new Date
-      //   let timer = Math.round(this.state.start_date_blue.getTime() / 1000) - Math.round(now.getTime() / 1000)
-
-      //   if (timer >= 0) {
-      //     this.props.dispatch({type: "SET_TIMER", payload: {timer: timer}})
-      //     this.setState({
-      //       timer: timer
-      //     })
-      //   } else {
-      //     let after_one_hour = now.getTime() + (1000 * initialState.timer)
-      //     let future = new Date(after_one_hour)
-      //     this.setState({
-      //       start_date_blue: future
-      //     })
-      //   }
-
-      // }, 1000)
-
-      let refresh_process = setInterval(async () => {
-        console.log("manager ... :", this.props.cores.exporter_task.enabled, this.props.cores.exporter_task.check_task, this.props.cores.exporter_task.timer, this.props.cores.exporter_task.interval)
+      let refresh_exporter = setInterval(async () => {
+        // console.log("manager ... :", this.props.cores.exporter_task.enabled, this.props.cores.exporter_task.check_task, this.props.cores.exporter_task.timer, this.props.cores.exporter_task.interval)
         if (this.props.cores.exporter_task.enabled) {
           if (!this.props.cores.exporter_task.check_task) {
             if (this.props.cores.exporter_task.timer == 0 ) {
-              console.log("run task success")
+              // console.log("run task success")
               const list_exporters = await GetProcessExporters(this.props.dispatch, {url: `http://${this.state.current_agent.ip}:${PORT}`})
-              // this.setState({
-              //   check_task: true
-              // })
+
               this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
             }
           }
+        } else {
+          if (this.state.scheduler_task.length > 0){
+            this.state.scheduler_task.map((task, i) => {
+              clearInterval(task.id)
+            })
+          }
+          this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
         }
-
-        // if (this.state.timer < 0) {
-        //   clearInterval(countdown_timer)
-        // }
-        
       }, this.props.cores.exporter_task.interval);
 
       this.setState({
         scheduler_task: [
+          ...this.state.scheduler_task,
           {
-            id: refresh_process,
-            name: "refresh_process"
-          },
-          // {
-          //   id: countdown_timer,
-          //   name: "countdown_timer"
-          // }
+            id: refresh_exporter,
+            name: "refresh_exporter"
+          }
         ],
       })
 
@@ -135,7 +85,7 @@ class Manager extends Component {
         this.setState({
           current_agent: a
         })
-        this.props.dispatch({ type: 'GET_CURRENT_AGENT', payload: {id_current_agent: i} })
+        this.props.dispatch({ type: 'GET_CURRENT_AGENT_EXPORTER', payload: {id_current_agent: i} })
         try {
           const resSys = await GetSystemInfo(this.props.dispatch, {url: `http://${a.ip}:${PORT}`})
           if (resSys) {
@@ -181,71 +131,10 @@ class Manager extends Component {
     console.log("config ", this.state.name)
   }
 
-  // openDefault(name, size) {
-	// 	this.setState({
-	// 		[name]: {
-	// 			show: true,
-	// 			size: size
-	// 		}
-	// 	});
-	// }
-	// closeDefault(name, size) {
-	// 	this.setState({
-	// 		[name]: {
-	// 			show: false,
-	// 			size: size
-	// 		}
-	// 	});
-	// }
-
-  // handleChange(date) {
-	// 	this.setState({
-	// 		start_date_input_a: date
-	// 	});
-	// }
-
-	// handleChange_blue(date) {
-	// 	this.setState({
-	// 		start_date_blue: date
-	// 	});
-	// }
-
-  // handleChangeInterval(ev) {
-  //   const {name, value} = ev.target 
-  //   this.setState({
-  //     [name]: value
-  //   })
-  // }
-
-  // onEnableScheduler() {
-  //   if (!this.state.enabled) {
-  //     this.setState({
-  //       enabled: !this.state.enabled,
-  //       check_task: false
-  //       })
-  //     this.props.dispatch({type: "SET_ENABLED", payload: {enabled: !this.state.enabled}})
-  //     this.props.dispatch({type: "SET_CHECK_TASK", payload: {check_task: false}})
-  //     this.props.dispatch({type: "SET_TIME_INTERVAL", payload: {interval: this.state.interval}})
-  //   } else {
-  //     this.setState({
-  //       enabled: false,
-  //       timer:  this.props.cores.timer
-  //     })
-  //     this.props.dispatch({type: "SET_ENABLED", payload: {enabled: false}})
-  //   }
-  // }
-
   render() {
     const {cores} = this.props
     const {system} = this.state
     const current_exporter = this.state.current_exporter
-
-    const filterPassedTime = (time) => {
-      const currentDate = new Date();
-      const selectedDate = new Date(time);
-  
-      return currentDate.getTime() < selectedDate.getTime();
-    };
 
     return (
       <Fragment>
@@ -350,58 +239,16 @@ class Manager extends Component {
               </div>
             </Row>
             {/* scheduler  */}
-            {/* <Row>
-              <div className="card">
-                <div className="card-header ch-alt">
-                  <Row>
-                    <Col sm={6}>
-                      <h2>
-                        Scheduler 
-                      </h2>
-                    </Col>
-                    <Col sm={6}>
-                      <Switch className="toggle-switch" switcher="switch-cyan" switchColor="rgba(0,188,212,0.5)" switchActive={"#00bcd4"}>
-                        <label className="ts-label scheduler-enable" htmlFor="ts-cyan">Enable</label>
-                        <input type="checkbox" id="ts-cyan" hidden="hidden" defaultChecked={this.state.enabled}/>
-                        <label className="ts-helper" htmlFor="ts-cyan" onClick={this.onEnableScheduler}></label>
-                      </Switch>
-                    </Col>
-                  </Row>
-                </div>
-                <div className="card-body card-padding">
-                  <form className="form-horizontal" role="form">
-                    <div className="form-group m-b-20" >
-                      <OverlayTrigger overlay={<Tooltip id={"interval"}>{`Milisecond run task refesh source`}</Tooltip>} placement="top">
-                        <label htmlFor="interval" className="col-sm-3 control-label">Interval</label>
-                      </OverlayTrigger>
-                      <div className="col-sm-8">
-                        <Input className="form-control" placeholder="milisecond" value={this.state.interval} name="interval" onChange={(ev) => this.handleChangeInterval(ev)}/>
-                      </div>
-                    </div>
 
-                    <div className="form-group" >
-                      <label htmlFor="interval" className="col-sm-3 control-label">Start Time</label>
-                      <div className="col-sm-8">
-                      <DatePicker
-                        // showIcon
-                        selected={this.state.start_date_blue}
-                        onChange={(date) => this.handleChange_blue(date)}
-                        showTimeSelect
-                        filterTime={filterPassedTime}
-                        // showTimeSelectOnly
-                        // intervals={15}
-                        timeCaption="Time"
-                        dateFormat="MM/dd/yyyy h:mm aa"
-                        showTimeInput
-                      />
-                       </div>
-                    </div>
-                    </form>
-                </div>
-              </div>
-            </Row> */}
-
-            <FormSchedulerRefresh props/>
+            <FormSchedulerRefresh 
+              location={this.props.location} 
+              service={{
+                interval: this.props.cores.exporter_task.interval, 
+                enabled: this.props.cores.exporter_task.enabled, 
+                check_task: this.props.cores.exporter_task.check_task, 
+                timer: this.props.cores.exporter_task.timer, 
+              }}
+            />
           </Col>
 				</Row>
         {/* Performance */}

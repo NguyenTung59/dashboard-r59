@@ -79,6 +79,13 @@ const routes = {
 			}),
 			exact: true
 		},{
+			path: "/services/process",
+			component: Loadable({
+				loader: () => import("./containers/layout/services/process"),
+				loading: Loading
+			}),
+			exact: true
+		},{
 			path: "/services/exporter",
 			component: Loadable({
 				loader: () => import("./containers/layout/services/exporter"),

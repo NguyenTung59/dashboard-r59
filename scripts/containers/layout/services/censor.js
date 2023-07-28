@@ -13,17 +13,16 @@ class Censor extends Component {
   constructor(props) {
 		super(props);
     this.state = {
-      service: this.props.cores.service.toUpperCase,
+      name: this.props.history.location.pathname.split("/")[2],
+      service: this.props.history.location.pathname.split("/")[2].toUpperCase(),
       system: this.props.cores.system,
-			// censors: this.props.cores.censor,
-      current_agent: this.props.cores.agents[this.props.cores.censor_task.id_agent_censor],
+      current_agent: this.props.cores.agents[this.props.censors.censor_task.id_agent_censor],
       init_refresh: null,
-      scheduler: [],
+      scheduler_task: [],
 		}
   }
 
   async componentDidMount() {
-    // let isMounted = true 
     try {
       // const resSys = await GetSystemInfo(this.props.dispatch, {url: `http://${this.state.current_agent.ip}:${PORT}`})
       // if (resSys) {
@@ -33,41 +32,38 @@ class Censor extends Component {
       // })}
 
       const agents = await GetAgents(this.props.dispatch)
-      // console.log(agents)
-      // const result = await GetProcessCore(this.props.dispatch, {name: "censor", url: `http://${this.state.current_agent.ip}:${PORT}`});
-      // console.log("result init ", result)
+      const result = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
 
       let refresh_init = setInterval(async () => {
-        // console.log("init running .... ", this.props.cores.timer, this.props.cores.enabled, this.props.cores.check_task)
-        let name = this.props.history.location.pathname.split("/")[2]
-        if (name != "") {
-          this.setState({
-            service: this.props.history.location.pathname.split("/")[2].toUpperCase
-          })
-          this.props.dispatch({type: `SET_NAME_SERVICE`, payload: {service: name}})  
-        }
-
-        // console.log(this.props.cores.censor_task)
-        if (this.props.censor_task.cores.enabled) {
-          if (!this.props.cores.censor_task.check_task) {
-            if (this.props.cores.censor_task.timer == 0 ) {
+        if (this.props.censors.censor_task.enabled) {
+          if (!this.props.censors.censor_task.check_task) {
+            if (this.props.censors.censor_task.timer == 0 ) {
               let refresh_censor = setInterval(async () => {
               // console.log("task running .... ")
-              // const res = await GetProcessCore(this.props.dispatch, {name: "censor", url: `http://${this.state.current_agent.ip}:${PORT}`});
-              // // console.log("res ", res)
-              // this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
-              // }, this.props.cores.censor_task.interval)
+              const res = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
+              this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
+              }, this.props.censors.censor_task.interval)
 
-              // this.setState({
-              //   scheduler_task: [
-              //     {
-              //       id: refresh_censor,
-              //       name: "refresh_censor"
-              //     }
-              //   ],
+              this.setState({
+                scheduler_task: [
+                  ...this.state.scheduler_task,
+                  {
+                    id: refresh_censor,
+                    name: "refresh_censor"
+                  }
+                ],
               })
             }
           }
+        } else {
+          if (this.state.scheduler_task.length > 0){
+            // console.log("task stopped .... ")
+            this.state.scheduler_task.map((task, i) => {
+              clearInterval(task.id)
+            })
+            this.setState({scheduler_task: []})
+          }
+          this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
         }
 
       }, 1000);
@@ -79,7 +75,6 @@ class Censor extends Component {
     } catch(e) {
       console.log(e);
     }
-    // isMounted = false
   }
 
   componentWillUnmount() {
@@ -99,7 +94,7 @@ class Censor extends Component {
           current_agent: a
         })
         this.props.dispatch({ type: 'GET_CURRENT_AGENT_CENSOR', payload: {id_current_agent: i} })
-        const res = await GetProcessCore(this.props.dispatch, {name: "censor", url: `http://${a.ip}:${PORT}`});
+        const res = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${a.ip}:${PORT}`});
       }
     })
   }
@@ -117,9 +112,8 @@ class Censor extends Component {
   }
 
   render() {
-    const {cores} = this.props
-    console.log(cores)
-    const current_censor = cores.censor
+    const {cores, censors} = this.props
+    const current_censor = censors.censor
     
     return (
       <Fragment>
@@ -203,7 +197,14 @@ class Censor extends Component {
             </div>
             </Row>
             {/* scheduler  */}
-            <FormSchedulerRefresh props/>
+            <FormSchedulerRefresh 
+              location={this.props.location} 
+              service={{
+                interval: this.props.censors.censor_task.interval, 
+                enabled: this.props.censors.censor_task.enabled, 
+                check_task: this.props.censors.censor_task.check_task, 
+                timer: this.props.censors.censor_task.timer, 
+              }}/>
           </Col>
 				</Row>
         {/* Performance */}
@@ -292,7 +293,8 @@ class Censor extends Component {
 const mapStateToProps = (state) => {
 	return {
 		auth: state.auth,
-    cores: state.cores
+    cores: state.cores,
+    censors: state.censors,
 	};
 }
 

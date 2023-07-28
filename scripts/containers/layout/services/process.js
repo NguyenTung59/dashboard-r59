@@ -1,57 +1,60 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux';
 import HeaderModule from '../../../common/module-header'
-
-import {Row, Col} from 'react-bootstrap'
-import { GetProcessCore, GetSystemInfo, GetAgents } from '../../../actions/core-action';
+import {Row, Col, NavDropdown, MenuItem} from 'react-bootstrap'
+import { GetAgents, GetProcessCore, GetSystemInfo } from '../../../actions/core-action';
 import {SecondsToDhms} from '../utilities/utility'
 import FormSchedulerRefresh from '../forms/form-scheduler-refresh';
+import HeaderSearch from '../../../components/header-search-bar';
 
-const ROOT_URL = 'http://192.168.14.165:8000';
+// const ROOT_URL = 'http://192.168.14.165:8000';
 const PORT = 8000
 
-class Cgate extends Component {
+class Process extends Component {
   constructor(props) {
 		super(props);
     this.state = {
-      name: this.props.history.location.pathname.split("/")[2],
+      name: "",
       service: this.props.history.location.pathname.split("/")[2].toUpperCase(),
       system: this.props.cores.system,
-      current_agent: this.props.cores.agents[this.props.cgates.cgate_task.id_agent_cgate],
+      current_agent: this.props.cores.agents[this.props.cores.process_task.id_agent_process],
       init_refresh: null,
+      current_process : this.props.cores.current_process,
+      result : this.props.cores.process,
       scheduler_task: [],
 		}
+    this.onChangeSearch = this.onChangeSearch.bind(this)
+    this.onClickSearch = this.onClickSearch.bind(this)
   }
 
   async componentDidMount() {
     try {
-      // const resSys = await GetSystemInfo(this.props.dispatch, {url: `http://${this.state.current_agent.ip}:${PORT}`})
-      // if (resSys) {
-      //   this.setState({
-      //     ...this.state,
-      //     system: resSys
-      // })}
+      const resSys = await GetSystemInfo(this.props.dispatch, {url: `http://${this.state.current_agent.ip}:${PORT}`})
+      if (resSys) {
+        this.setState({
+          system: resSys
+      })}
 
       const agents = await GetAgents(this.props.dispatch)
       const result = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
 
       let refresh_init = setInterval(async () => {
-        if (this.props.cgates.cgate_task.enabled) {
-          if (!this.props.cgates.cgate_task.check_task) {
-            if (this.props.cgates.cgate_task.timer == 0 ) {
-              let refresh_cgate = setInterval(async () => {
+        // console.log(this.props.cores.process_task)
+        if (this.props.cores.process_task.enabled) {
+          if (!this.props.cores.process_task.check_task) {
+            if (this.props.cores.process_task.timer == 0 ) {
+              let refresh_process = setInterval(async () => {
               // console.log("task running .... ")
               const res = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
-              // console.log("res ", res)
               this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
-              }, this.props.cgates.cgate_task.interval)
+              }, this.props.cores.process_task.interval)
 
               this.setState({
                 scheduler_task: [
                   ...this.state.scheduler_task,
                   {
-                    id: refresh_cgate,
-                    name: "refresh_cgate"
+                    id: refresh_process,
+                    name: "refresh_process"
                   }
                 ],
               })
@@ -59,9 +62,11 @@ class Cgate extends Component {
           }
         } else {
           if (this.state.scheduler_task.length > 0){
+            // console.log("task stopped .... ")
             this.state.scheduler_task.map((task, i) => {
               clearInterval(task.id)
             })
+            this.setState({scheduler_task: []})
           }
           this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
         }
@@ -91,41 +96,68 @@ class Cgate extends Component {
     this.props.cores.agents.map(async (a, i) => {
       if (a.name == hostname) {
         this.setState({
-          ...this.state,
           current_agent: a
         })
-        this.props.dispatch({ type: 'GET_CURRENT_AGENT_CGATE', payload: {id_current_agent: i} })
+        this.props.dispatch({ type: 'GET_CURRENT_AGENT_PROCESS', payload: {id_current_agent: i} })
         const res = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${a.ip}:${PORT}`});
       }
     })
   }
 
+  onSwitchProcess(pid, ev){
+    this.props.cores.process.map(async (e, i) => {
+      if (e.pid == pid) {
+        this.setState({
+          current_process: e
+        })
+        this.props.dispatch({ type: 'GET_CURRENT_PROCESS', payload: {current_process: e} });
+      }
+    })
+  }
+
+  onChangeSearch(ev) {
+    const {name, value} = ev.target 
+    this.setState({
+      [name]: value
+    })
+  }
+
+  async onClickSearch() {
+    console.log("129 ", this.state.name)
+    const result = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
+    console.log("result ", result)
+    this.setState({
+      result: [...result]
+    })
+  }
+
   turnOffService() {
-    console.log("turn off cgate ")
+    console.log("turn off ", this.state.name)
   }
   
   resetService() {
-    console.log("reset cgate ")
+    console.log("reset ", this.state.name)
   }
 
   configService() {
-    console.log("config cgate")
+    console.log("config ", this.state.name)
   }
 
   render() {
-    const {cores, cgates} = this.props
-    const current_cgate = cgates.cgate
-
-    // console.log(current_cgate.traffic_volume)
+    const {cores} = this.props
+    const {system} = this.state
+    const current_process = cores.current_process
+    // console.log("current_process ",current_process)
+    
     return (
       <Fragment>
-				<HeaderModule text="Cgate"/>
+				<HeaderModule text="Process"/>
 				<Row>
 					<Col sm={7}>
               <div className="card">
               <div className="card-header ch-alt">
                 <h2>
-                  {current_cgate.name.charAt(0).toUpperCase() + current_cgate.name.slice(1)} Information
+                  {current_process.name ? current_process.name.charAt(0).toUpperCase() + current_process.name.slice(1) : "-"} Information
                 </h2>
               </div>
               <div className="card-body card-padding">
@@ -146,20 +178,20 @@ class Cgate extends Component {
                         <i className="zmdi zmdi-devices"></i> UUID </li>
                       <li className="ng-binding">
                         <i className="zmdi zmdi-desktop-mac"></i> Host Name </li>
-                      <li className="ng-binding">{current_cgate.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(current_cgate.runtime)}</li>
+                      <li className="ng-binding">{current_process.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
+                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(current_process.runtime)}</li>
                     </ul>
                   </Col>
                   <Col sm={8}>
                     <ul>
-                      <li className="ng-binding"> {current_cgate.cpu}</li>
-                      <li className="ng-binding"> {current_cgate.ram}</li>
-                      <li className="ng-binding"> {current_cgate.total_disk}</li>
-                      <li className="ng-binding"> {current_cgate.log_disk}</li>
-                      <li className="ng-binding"> {current_cgate.traffic}</li>
-                      <li className="ng-binding"> {current_cgate.uuid != "" ? current_cgate.uuid : "-"}</li>
-                      <li className="ng-binding"> {current_cgate.hostname != "" ? current_cgate.hostname : "localhost"}</li>
-                      <li className="ng-binding"> {current_cgate.status > 0 ? "Running" : "Stopped"} </li>
+                      <li className="ng-binding"> {system.cpu}</li>
+                      <li className="ng-binding"> {system.ram}</li>
+                      <li className="ng-binding"> {system.total_disk}</li>
+                      <li className="ng-binding"> {system.log_disk}</li>
+                      <li className="ng-binding"> {system.traffic}</li>
+                      <li className="ng-binding"> {system.uuid != "" ? system.uuid : "-"}</li>
+                      <li className="ng-binding"> {system.hostname != "" ? system.hostname : "localhost"}</li>
+                      <li className="ng-binding"> {current_process.status > 0 ? "Running" : "Stopped"} </li>
                       <li className="ng-binding">                     
                         <Col sm={4}> <a onClick={this.turnOffService.bind(this)}><i className="zmdi zmdi-power"></i></a></Col>
                         <Col sm={4}> <a onClick={this.resetService.bind(this)}><i className="zmdi zmdi-refresh"></i></a></Col>
@@ -173,39 +205,76 @@ class Cgate extends Component {
 
 					</Col>
           <Col sm={5}>
+            <Row>
             <div className="card">
               <div className="card-header ch-alt">
                 <h2>
-                  List Agent
+                  List Agents
                 </h2>
               </div>
               <div className="card-body card-padding">
                 <Row className="pmo-contact">
-                    {cores.agents.map((a, i) => (
-                      <Col sm={12/cores.agents.length} key={i} onClick={this.onSwitchAgent.bind(this, a.name)}>
-                          <ul className="list-unstyled module-action">
-                            <li>
-                              <a><i className="zmdi zmdi-desktop-mac"></i> {a.name}</a>
-                            </li>
-                          </ul>
-                      </Col>)
-                    )}
+                  {cores.agents.map((a, i) => (
+                    <Col sm={12/cores.agents.length} key={i} onClick={this.onSwitchAgent.bind(this, a.name)}>
+                        <ul className="list-unstyled module-action">
+                          <li>
+                            <a><i className="zmdi zmdi-desktop-mac"></i> {a.name}</a>
+                          </li>
+                        </ul>
+                    </Col>)
+                  )}
+                </Row>
+              </div>
+            </div>
+            </Row>
+            {/* list process */}
+            <Row>
+              <div className="card">
+                <div className="card-header ch-alt">
+                  <Row>
+                  <Col sm={6}>
+                    <h2>
+                      Search Process
+                    </h2>
+                  </Col>
+                  <Col sm={6} className="search-process">
+                    <input type="search" placeholder="Search..." name="name" onChange={this.onChangeSearch}/>
+                    <button className="btn btn-search" tabIndex="0" onClick={this.onClickSearch}>
+                      <i className="zmdi zmdi-search" tabIndex="0"></i>
+                    </button>
+                  </Col>
                   </Row>
                 </div>
-            </div>
+                <div className="card-body card-padding">
+                  {this.state.result.length > 0 ?this.state.result.sort((a, b) => a.commnad - b.commnad).map((e, i) => (
+                      <div key={i} onClick={this.onSwitchProcess.bind(this, e.pid)}>
+                          <ul className="list-unstyled module-action">
+                            <li>
+                              <a>{e.command}</a>
+                            </li>
+                          </ul>
+                      </div>)
+                    ): <div>No rows</div>
+                  }
+							</div>
+              </div>
+            </Row>
             {/* scheduler  */}
             <FormSchedulerRefresh 
               location={this.props.location} 
               service={{
-                interval: this.props.cgates.cgate_task.interval, 
-                enabled: this.props.cgates.cgate_task.enabled, 
-                check_task: this.props.cgates.cgate_task.check_task, 
-                timer: this.props.cgates.cgate_task.timer, 
+                interval: this.props.cores.process_task.interval, 
+                enabled: this.props.cores.process_task.enabled, 
+                check_task: this.props.cores.process_task.check_task, 
+                timer: this.props.cores.process_task.timer, 
               }}/>
           </Col>
 				</Row>
+        {/* Performance */}
+        <div className="module-head">
+          <h2>Performance</h2>
+        </div>
         <Row>
-          <h3>Performance</h3>
           <Col sm={3}>
             <div className="card">
               <div className="card-header ch-alt">
@@ -214,7 +283,7 @@ class Cgate extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {current_cgate.cpu_usage ? current_cgate.cpu_usage : "0.00%"}
+                {current_process.cpu_usage ? current_process.cpu_usage : "0.00%"}
               </div>
             </div>
           </Col>
@@ -226,7 +295,7 @@ class Cgate extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {current_cgate.memory_usage ? current_cgate.memory_usage : "0.00%"}
+                {current_process.memory_usage ? current_process.memory_usage : "0.00%"}
               </div>
             </div>
           </Col>
@@ -238,7 +307,7 @@ class Cgate extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {current_cgate.disk_usage ? current_cgate.disk_usage : "0.00%"}
+                {current_process.disk_usage ? current_process.disk_usage : "0.00%"}
               </div>
             </div>
           </Col>
@@ -250,7 +319,7 @@ class Cgate extends Component {
                 </h5>
               </div>            
               <div className="card-body card-padding">
-                {current_cgate.traffic_volume ? current_cgate.traffic_volume : "0 kb/s"}
+                {current_process.traffic_volume ? current_process.traffic_volume : "0 kb/s"}
               </div>
             </div>
           </Col>
@@ -264,8 +333,8 @@ const mapStateToProps = (state) => {
 	return {
 		auth: state.auth,
     cores: state.cores,
-    cgates: state.cgates,
+    cores: state.cores,
 	};
 }
 
-export default connect(mapStateToProps)(Cgate);
+export default connect(mapStateToProps)(Process);

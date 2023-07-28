@@ -383,6 +383,18 @@
     transition: 0.5s;
 }
 
+.enable-scheduler {
+    float: right;
+}
+
+.btn-search {
+    padding: 3px 6px;
+}
+
+.search-process input[type=search] {
+    -webkit-appearance: auto;
+}
+
 /* Toggled Switch */
 .toggle-switch {
     display: inline-block;

@@ -8,6 +8,7 @@ import Input from '../../../components/input'
 import Sparkline from '../../../components/sparkline'
 import ModuleHeader from '../../../common/module-header'
 import Ripple from '../../../components/ripple'
+import { GetMetrics } from '../../../actions/core-action';
 
 import { Row, Col, Alert, NavDropdown, MenuItem, } from 'react-bootstrap'
 
@@ -61,10 +62,12 @@ class Home extends Component {
 					"name": "LG G3",
 					"price": 690
 				}
-			]
+			],
+			metrics: this.props.metrics.data
 		}
 		this.sparkline = this.props.sparkline;
 		this.changeValue = this.changeValue.bind(this);
+		this.dynamicChart = this.dynamicChart.bind(this)
 	}
 	componentDidMount(){
 		notify.growl({
@@ -104,10 +107,10 @@ class Home extends Component {
 
 	dynamicChart() {
 		var data = [],
-			totalPoints = 300,
+			totalPoints = 100,
 			j = 0;
-		function getRandomData() {
 
+		function getDataMetrics(props) {
 			if (data.length > 0)
 				data = data.slice(1);
 			while (data.length < totalPoints) {
@@ -120,6 +123,15 @@ class Home extends Component {
 					y = 90;
 				}
 				data.push(y);
+
+				try {
+					// let data_metrics = await GetMetrics(props.dispatch, {url: `http://192.168.14.151:8000`});
+					// console.log("metrics data ", data_metrics)
+
+					// data.push(data_metrics.in_pkts_speed)
+				} catch (error) {
+					console.log(error)
+				}
 			}
 			var res = [];
 			for (var i = 0; i < data.length; ++i) {
@@ -128,8 +140,11 @@ class Home extends Component {
 
 			return res;
 		}
+		// console.log(this.props.metrics.data)
+
+		// console.log(getDataMetrics())
 		var updateInterval = 30;
-		var plot = $.plot("#dynamic-chart", [getRandomData()], {
+		var plot_bw = $.plot("#dynamic-chart", [getDataMetrics(this.props)], {
 			series: {
 				label: "Server Process Data",
 				lines: {
@@ -179,13 +194,13 @@ class Home extends Component {
 			}
 		});
 
-		function update() {
-			plot.setData([getRandomData()]);
-			plot.setupGrid();
-			plot.draw();
+		function update(props) {
+			plot_bw.setData([getDataMetrics(props)]);
+			plot_bw.setupGrid();
+			plot_bw.draw();
 			setTimeout(update, updateInterval);
 		}
-		update();
+		update(this.props);
 	}
 
 
@@ -197,6 +212,23 @@ class Home extends Component {
 				<ModuleHeader text="Overview"/>
 				<div className="row">
 					<div className="col-sm-12">
+
+
+						{/* Dynamic Chart */}
+						<Row>
+							<Col sm={12}>
+							<div className="card">
+								<div className="card-header">
+									<h2>Dynamic Chart</h2>
+								</div>
+								<div className="card-body card-padding">
+									<div id="dynamic-chart" className="flot-chart"></div>
+									<div className="flc-dynamic"></div>
+								</div>
+							</div>
+						</Col>
+					</Row>
+
 						<div className="mini-charts">
 							<div className="row">
 								<div className="col-sm-6 col-md-3">
@@ -352,19 +384,6 @@ class Home extends Component {
 						<div className="form-group">
 							<Input className="form-control input-sm" placeholder="Input Small" name="lastName" onChange={this.changeValue} />
 						</div>
-						<Row>
-						<Col sm={12}>
-						<div className="card">
-							<div className="card-header">
-								<h2>Dynamic Chart</h2>
-							</div>
-							<div className="card-body card-padding">
-								<div id="dynamic-chart" className="flot-chart"></div>
-								<div className="flc-dynamic"></div>
-							</div>
-						</div>
-					</Col>
-					</Row>
 					</div>
 				</div>
 			</Fragment>
@@ -373,7 +392,8 @@ class Home extends Component {
 }
 function mapStateToProps(state) {
 	return {
-		sparkline: state.sparkline
+		sparkline: state.sparkline,
+		metrics: state.metrics
 	};
 }
 // function matchDispatchToProps(dispatch) {

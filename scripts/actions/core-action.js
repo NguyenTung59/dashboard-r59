@@ -29,6 +29,30 @@ export async function GetSystemInfo(dispatch, payload) {
 	}
 }
 
+export async function GetMetrics(dispatch, payload) { 
+  const requestOptions = {
+		method: 'GET',
+		headers: { 
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`,
+			'C-Api-Key': `QmVhcmVyIGJtTnpYMk52Y21WZk1qQXlNdz09`
+		}
+	};
+
+  try {
+		let response = await fetch(`${payload.url}/api/agent/process/metrics`, requestOptions);
+		let result = await response.json();
+		if (result.code > 200) return
+
+    if (result.data) {
+      dispatch({ type: 'GET_METRICS', payload: {data: JSON.parse(result.data)} });
+      return JSON.parse(result.data)
+    }
+  } catch (error) {
+		console.log(error);
+	}
+}
+
 export async function GetAgents(dispatch) { 
   const requestOptions = {
 		method: 'GET',
@@ -83,7 +107,7 @@ export async function GetProcessCore(dispatch, payload) {
           return JSON.parse(result.data)
         }
 			default:
-				dispatch({ type: 'GET_PROCESS', payload: {process: JSON.parse(result.data)} });
+				dispatch({ type: 'GET_LIST_PROCESS', payload: {process: JSON.parse(result.data)} });
 				return JSON.parse(result.data)
     }
 	} catch (error) {
