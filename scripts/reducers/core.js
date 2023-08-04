@@ -51,6 +51,7 @@ export const initialState = {
     enabled: false,
     check_task: false,
   },
+  process_name: "",
   process:[],
   current_process: {
     command: "redis-server",
@@ -63,17 +64,17 @@ export const initialState = {
     start_time: "09:04",
     status: 1,
   },
-    exporters: [],
-    current_exporter: {
-      pid: 0,
-      guid: "",
-      port: 0,
-      name: "",
-      cmd: "",
-      run_cmd: "",
-      path: "",
-      status: "stopped"
-    }
+  exporters: [],
+  current_exporter: {
+    pid: 0,
+    guid: "",
+    port: 0,
+    name: "",
+    cmd: "",
+    run_cmd: "",
+    path: "",
+    status: "stopped"
+  }
 };
 
 export default function CoreReducer(state = initialState, action){
@@ -113,7 +114,6 @@ export default function CoreReducer(state = initialState, action){
     case 'GET_CURRENT_AGENT_EXPORTER':
       return {
         ...state,
-        // id_agent_censor: action.payload.id_current_agent,
         exporter_task: {
           ...state.exporter_task,
           id_agent_exporter: action.payload.id_current_agent
@@ -156,7 +156,6 @@ export default function CoreReducer(state = initialState, action){
     case 'GET_CURRENT_AGENT_PROCESS':
       return {
         ...state,
-        // id_agent_censor: action.payload.id_current_agent,
         process_task: {
           ...state.process_task,
           id_agent_exporter: action.payload.id_current_agent
@@ -174,6 +173,11 @@ export default function CoreReducer(state = initialState, action){
           ...state.process_task,
           check_task: action.payload.check_task
         }
+      };
+    case 'SET_PROCESS_NAME':
+      return {
+        ...state,
+        process_name: action.payload.name
       };
     case 'SET_PROCESS_TIMER':
       return {

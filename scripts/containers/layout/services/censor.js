@@ -1,10 +1,12 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux';
-import HeaderModule from '../../../common/module-header'
-import {Row, Col, NavDropdown, MenuItem} from 'react-bootstrap'
-import { GetAgents, GetProcessCore, GetSystemInfo } from '../../../actions/core-action';
+import {Row, Col} from 'react-bootstrap'
+import { GetAgents, GetProcessCore } from '../../../actions/core-action';
 import {SecondsToDhms} from '../utilities/utility'
+import { checkPercentWarning, checkTrafficWarning } from '../utilities/check-warning';
+import HeaderModule from '../../../common/module-header'
 import FormSchedulerRefresh from '../forms/form-scheduler-refresh';
+import ListAgents from '../forms/agents/form-list-agents';
 
 // const ROOT_URL = 'http://192.168.14.165:8000';
 const PORT = 8000
@@ -31,8 +33,8 @@ class Censor extends Component {
       //     system: resSys
       // })}
 
-      const agents = await GetAgents(this.props.dispatch)
-      const result = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
+      await GetAgents(this.props.dispatch)
+      await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
 
       let refresh_init = setInterval(async () => {
         if (this.props.censors.censor_task.enabled) {
@@ -87,18 +89,6 @@ class Censor extends Component {
     this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
   } 
 
-  onSwitchAgent(hostname, ev){
-    this.props.cores.agents.map(async (a, i) => {
-      if (a.name == hostname) {
-        this.setState({
-          current_agent: a
-        })
-        this.props.dispatch({ type: 'GET_CURRENT_AGENT_CENSOR', payload: {id_current_agent: i} })
-        const res = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${a.ip}:${PORT}`});
-      }
-    })
-  }
-
   turnOffService() {
     console.log("turn off censor ")
   }
@@ -114,7 +104,7 @@ class Censor extends Component {
   render() {
     const {cores, censors} = this.props
     const current_censor = censors.censor
-    
+
     return (
       <Fragment>
 				<HeaderModule text="Censor"/>
@@ -147,6 +137,7 @@ class Censor extends Component {
                       <li className="ng-binding">
                         <i className="zmdi zmdi-assignment"></i> Rule Version </li>
                       <li className="ng-binding">{current_censor.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
+                      <li className="ng-binding"><i className="zmdi zmdi-time"></i> Start time </li>
                       <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(current_censor.runtime)}</li>
                     </ul>
                   </Col>
@@ -161,6 +152,7 @@ class Censor extends Component {
                       <li className="ng-binding"> {current_censor.hostname != "" ? current_censor.hostname : "localhost"}</li>
                       <li className="ng-binding"> {current_censor.used_rule_version != "" ? current_censor.used_rule_version : "Waitting"}</li>
                       <li className="ng-binding"> {current_censor.status > 0 ? "Running" : "Stopped"} </li>
+                      <li className="ng-binding"> {current_censor && current_censor.start_time ? current_censor.start_time : "-"} </li>
                       <li className="ng-binding">                     
                         <Col sm={4}> <a onClick={this.turnOffService.bind(this)}><i className="zmdi zmdi-power"></i></a></Col>
                         <Col sm={4}> <a onClick={this.resetService.bind(this)}><i className="zmdi zmdi-refresh"></i></a></Col>
@@ -174,28 +166,13 @@ class Censor extends Component {
 
 					</Col>
           <Col sm={5}>
-            <Row>
-            <div className="card">
-              <div className="card-header ch-alt">
-                <h2>
-                  List Agent
-                </h2>
-              </div>
-              <div className="card-body card-padding">
-                <Row className="pmo-contact">
-                  {cores.agents.map((a, i) => (
-                    <Col sm={12/cores.agents.length} key={i} onClick={this.onSwitchAgent.bind(this, a.name)}>
-                        <ul className="list-unstyled module-action">
-                          <li>
-                            <a><i className="zmdi zmdi-desktop-mac"></i> {a.name}</a>
-                          </li>
-                        </ul>
-                    </Col>)
-                  )}
-                </Row>
-              </div>
-            </div>
-            </Row>
+            <ListAgents service={{
+              name: this.state.name,
+              id_agent: this.props.censors.censor_task.id_agent_censor,
+            }}
+            dispatch={this.props.dispatch}
+            cores={cores}
+            />
             {/* scheduler  */}
             <FormSchedulerRefresh 
               location={this.props.location} 
@@ -214,7 +191,7 @@ class Censor extends Component {
         <Row>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className={checkPercentWarning(current_censor.cpu_usage)}>
                 <h5>
                   CPU usage
                 </h5>
@@ -226,7 +203,7 @@ class Censor extends Component {
           </Col>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className={checkPercentWarning(current_censor.memory_usage)}>
                 <h5>
                   RAM usage
                 </h5>
@@ -238,7 +215,7 @@ class Censor extends Component {
           </Col>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className={checkPercentWarning(current_censor.disk_usage)}>
                 <h5>
                   Disk usage
                 </h5>
@@ -250,7 +227,7 @@ class Censor extends Component {
           </Col>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className={checkTrafficWarning(current_censor.traffic_volume)}>
                 <h5>
                   Traffic 
                 </h5>
@@ -262,7 +239,7 @@ class Censor extends Component {
           </Col>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className="card-header ch-alt bgm-lightgreen">
                 <h5>
                   Amount Rule Applied 
                 </h5>
@@ -274,7 +251,7 @@ class Censor extends Component {
           </Col>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className="card-header ch-alt bgm-red txt-white">
                 <h5>
                   Amount Rule Applied Fail
                 </h5>

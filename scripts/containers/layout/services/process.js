@@ -1,11 +1,13 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux';
-import HeaderModule from '../../../common/module-header'
 import {Row, Col, NavDropdown, MenuItem} from 'react-bootstrap'
 import { GetAgents, GetProcessCore, GetSystemInfo } from '../../../actions/core-action';
 import {SecondsToDhms} from '../utilities/utility'
+import { checkPercentWarning, checkTrafficWarning } from '../utilities/check-warning';
+// import HeaderSearch from '../../../components/header-search-bar';
+import HeaderModule from '../../../common/module-header'
 import FormSchedulerRefresh from '../forms/form-scheduler-refresh';
-import HeaderSearch from '../../../components/header-search-bar';
+import ListAgents from '../forms/agents/form-list-agents';
 
 // const ROOT_URL = 'http://192.168.14.165:8000';
 const PORT = 8000
@@ -14,7 +16,7 @@ class Process extends Component {
   constructor(props) {
 		super(props);
     this.state = {
-      name: "",
+      name: this.props.cores.process_name,
       service: this.props.history.location.pathname.split("/")[2].toUpperCase(),
       system: this.props.cores.system,
       current_agent: this.props.cores.agents[this.props.cores.process_task.id_agent_process],
@@ -35,16 +37,14 @@ class Process extends Component {
           system: resSys
       })}
 
-      const agents = await GetAgents(this.props.dispatch)
-      const result = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
+      await GetAgents(this.props.dispatch)
+      await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
 
       let refresh_init = setInterval(async () => {
-        // console.log(this.props.cores.process_task)
         if (this.props.cores.process_task.enabled) {
           if (!this.props.cores.process_task.check_task) {
             if (this.props.cores.process_task.timer == 0 ) {
               let refresh_process = setInterval(async () => {
-              // console.log("task running .... ")
               const res = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
               this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
               }, this.props.cores.process_task.interval)
@@ -62,7 +62,6 @@ class Process extends Component {
           }
         } else {
           if (this.state.scheduler_task.length > 0){
-            // console.log("task stopped .... ")
             this.state.scheduler_task.map((task, i) => {
               clearInterval(task.id)
             })
@@ -92,18 +91,6 @@ class Process extends Component {
     this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
   } 
 
-  onSwitchAgent(hostname, ev){
-    this.props.cores.agents.map(async (a, i) => {
-      if (a.name == hostname) {
-        this.setState({
-          current_agent: a
-        })
-        this.props.dispatch({ type: 'GET_CURRENT_AGENT_PROCESS', payload: {id_current_agent: i} })
-        const res = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${a.ip}:${PORT}`});
-      }
-    })
-  }
-
   onSwitchProcess(pid, ev){
     this.props.cores.process.map(async (e, i) => {
       if (e.pid == pid) {
@@ -123,9 +110,12 @@ class Process extends Component {
   }
 
   async onClickSearch() {
-    console.log("129 ", this.state.name)
-    const result = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
-    console.log("result ", result)
+    // console.log("129 ", this.state.name)
+    // console.log(this.state.name, this.state.current_agent)
+
+    this.props.dispatch({ type: 'GET_CURRENT_NAME', payload: {name: this.state.name} });
+    const result = await GetProcessCore(this.props.dispatch, {name: this.props.cores.process_name, url: `http://${this.state.current_agent.ip}:${PORT}`});
+    // console.log("result ", result)
     this.setState({
       result: [...result]
     })
@@ -147,17 +137,16 @@ class Process extends Component {
     const {cores} = this.props
     const {system} = this.state
     const current_process = cores.current_process
-    // console.log("current_process ",current_process)
     
     return (
       <Fragment>
-				<HeaderModule text="Process"/>
+				<HeaderModule text="Processes"/>
 				<Row>
 					<Col sm={7}>
-              <div className="card">
+            <div className="card">
               <div className="card-header ch-alt">
                 <h2>
-                  {current_process.name ? current_process.name.charAt(0).toUpperCase() + current_process.name.slice(1) : "-"} Information
+                  <a>{current_process.pid} {current_process.command ? current_process.command.charAt(0).toUpperCase() + current_process.command.slice(1) : ""}</a> - Information
                 </h2>
               </div>
               <div className="card-body card-padding">
@@ -179,6 +168,7 @@ class Process extends Component {
                       <li className="ng-binding">
                         <i className="zmdi zmdi-desktop-mac"></i> Host Name </li>
                       <li className="ng-binding">{current_process.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
+                      <li className="ng-binding"><i className="zmdi zmdi-time"></i> Start time </li>
                       <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(current_process.runtime)}</li>
                     </ul>
                   </Col>
@@ -192,6 +182,7 @@ class Process extends Component {
                       <li className="ng-binding"> {system.uuid != "" ? system.uuid : "-"}</li>
                       <li className="ng-binding"> {system.hostname != "" ? system.hostname : "localhost"}</li>
                       <li className="ng-binding"> {current_process.status > 0 ? "Running" : "Stopped"} </li>
+                      <li className="ng-binding"> {current_process.start_time ? current_process.start_time : "-"} </li>
                       <li className="ng-binding">                     
                         <Col sm={4}> <a onClick={this.turnOffService.bind(this)}><i className="zmdi zmdi-power"></i></a></Col>
                         <Col sm={4}> <a onClick={this.resetService.bind(this)}><i className="zmdi zmdi-refresh"></i></a></Col>
@@ -202,63 +193,18 @@ class Process extends Component {
                 </Row>
               </div>
             </div>
-
 					</Col>
           <Col sm={5}>
-            <Row>
-            <div className="card">
-              <div className="card-header ch-alt">
-                <h2>
-                  List Agents
-                </h2>
-              </div>
-              <div className="card-body card-padding">
-                <Row className="pmo-contact">
-                  {cores.agents.map((a, i) => (
-                    <Col sm={12/cores.agents.length} key={i} onClick={this.onSwitchAgent.bind(this, a.name)}>
-                        <ul className="list-unstyled module-action">
-                          <li>
-                            <a><i className="zmdi zmdi-desktop-mac"></i> {a.name}</a>
-                          </li>
-                        </ul>
-                    </Col>)
-                  )}
-                </Row>
-              </div>
-            </div>
-            </Row>
-            {/* list process */}
-            <Row>
-              <div className="card">
-                <div className="card-header ch-alt">
-                  <Row>
-                  <Col sm={6}>
-                    <h2>
-                      Search Process
-                    </h2>
-                  </Col>
-                  <Col sm={6} className="search-process">
-                    <input type="search" placeholder="Search..." name="name" onChange={this.onChangeSearch}/>
-                    <button className="btn btn-search" tabIndex="0" onClick={this.onClickSearch}>
-                      <i className="zmdi zmdi-search" tabIndex="0"></i>
-                    </button>
-                  </Col>
-                  </Row>
-                </div>
-                <div className="card-body card-padding">
-                  {this.state.result.length > 0 ?this.state.result.sort((a, b) => a.commnad - b.commnad).map((e, i) => (
-                      <div key={i} onClick={this.onSwitchProcess.bind(this, e.pid)}>
-                          <ul className="list-unstyled module-action">
-                            <li>
-                              <a>{e.command}</a>
-                            </li>
-                          </ul>
-                      </div>)
-                    ): <div>No rows</div>
-                  }
-							</div>
-              </div>
-            </Row>
+            {/* list agents */}
+            <ListAgents 
+              service={{
+                name: this.state.service,
+                id_agent: this.props.cores.process_task.id_agent_process,
+              }}
+              dispatch={this.props.dispatch}
+              cores={cores}
+            />
+
             {/* scheduler  */}
             <FormSchedulerRefresh 
               location={this.props.location} 
@@ -270,6 +216,42 @@ class Process extends Component {
               }}/>
           </Col>
 				</Row>
+        {/* list process */}
+        <Row>
+          <Col sm={12}>
+            <div className="card">
+              <div className="card-header ch-alt">
+                <Row>
+                <Col sm={8}>
+                  <h2>
+                    Search Process
+                  </h2>
+                </Col>
+                <Col sm={4} className="search-process">
+                  <input type="search" placeholder="Search..." name="name" onChange={this.onChangeSearch}/>
+                  <button className="btn btn-search" tabIndex="0" onClick={this.onClickSearch}>
+                    <i className="zmdi zmdi-search" tabIndex="0"></i>
+                  </button>
+                </Col>
+                </Row>
+              </div>
+              <div className="card-body card-padding">
+                <div style={{maxHeight: "100px", overflow: "auto"}}>
+                {this.state.result.length > 0 ? this.state.result.sort((a, b) => a.command - b.command).map((e, i) => (
+                    <div key={i} onClick={this.onSwitchProcess.bind(this, e.pid)}>
+                        <ul className="list-unstyled module-action">
+                          <li>
+                            <a>{e.pid} {e.command}</a>
+                          </li>
+                        </ul>
+                    </div>)
+                  ): <div>No rows</div>
+                }
+                </div>
+              </div>
+            </div>
+          </Col>
+        </Row>
         {/* Performance */}
         <div className="module-head">
           <h2>Performance</h2>
@@ -277,7 +259,7 @@ class Process extends Component {
         <Row>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className={checkPercentWarning(current_process.cpu_usage)}>
                 <h5>
                   CPU usage
                 </h5>
@@ -289,7 +271,7 @@ class Process extends Component {
           </Col>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className={checkPercentWarning(current_process.memory_usage)}>
                 <h5>
                   RAM usage
                 </h5>
@@ -301,7 +283,7 @@ class Process extends Component {
           </Col>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className={checkPercentWarning(current_process.disk_usage)}>
                 <h5>
                   Disk usage
                 </h5>
@@ -313,7 +295,7 @@ class Process extends Component {
           </Col>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className={checkTrafficWarning(current_process.traffic_volume)}>
                 <h5>
                   Traffic 
                 </h5>

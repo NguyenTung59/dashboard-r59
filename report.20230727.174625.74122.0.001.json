@@ -1,0 +1,724 @@
+
+{
+  "header": {
+    "reportVersion": 1,
+    "event": "Allocation failed - JavaScript heap out of memory",
+    "trigger": "FatalError",
+    "filename": "report.20230727.174625.74122.0.001.json",
+    "dumpEventTime": "2023-07-27T17:46:25Z",
+    "dumpEventTimeStamp": "1690454785818",
+    "processId": 74122,
+    "cwd": "/home/tungnm/Dev/ui/dashboard-r59",
+    "commandLine": [
+      "node",
+      "server.js"
+    ],
+    "nodejsVersion": "v12.13.1",
+    "glibcVersionRuntime": "2.35",
+    "glibcVersionCompiler": "2.17",
+    "wordSize": 64,
+    "arch": "x64",
+    "platform": "linux",
+    "componentVersions": {
+      "node": "12.13.1",
+      "v8": "7.7.299.13-node.16",
+      "uv": "1.33.1",
+      "zlib": "1.2.11",
+      "brotli": "1.0.7",
+      "ares": "1.15.0",
+      "modules": "72",
+      "nghttp2": "1.39.2",
+      "napi": "5",
+      "llhttp": "1.1.4",
+      "http_parser": "2.8.0",
+      "openssl": "1.1.1d",
+      "cldr": "35.1",
+      "icu": "64.2",
+      "tz": "2019c",
+      "unicode": "12.1"
+    },
+    "release": {
+      "name": "node",
+      "lts": "Erbium",
+      "headersUrl": "https://nodejs.org/download/release/v12.13.1/node-v12.13.1-headers.tar.gz",
+      "sourceUrl": "https://nodejs.org/download/release/v12.13.1/node-v12.13.1.tar.gz"
+    },
+    "osName": "Linux",
+    "osRelease": "5.19.0-46-generic",
+    "osVersion": "#47~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Jun 21 15:35:31 UTC 2",
+    "osMachine": "x86_64",
+    "cpus": [
+      {
+        "model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+        "speed": 4084,
+        "user": 36435700,
+        "nice": 110500,
+        "sys": 11803100,
+        "idle": 277759300,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+        "speed": 3999,
+        "user": 35712700,
+        "nice": 115800,
+        "sys": 10903700,
+        "idle": 279689800,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+        "speed": 4075,
+        "user": 36102300,
+        "nice": 98400,
+        "sys": 10900600,
+        "idle": 279486900,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+        "speed": 4062,
+        "user": 38567400,
+        "nice": 134800,
+        "sys": 10950800,
+        "idle": 277208600,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+        "speed": 4095,
+        "user": 37198300,
+        "nice": 90900,
+        "sys": 10819900,
+        "idle": 278698200,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+        "speed": 4023,
+        "user": 37207000,
+        "nice": 140700,
+        "sys": 10847900,
+        "idle": 278583700,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+        "speed": 4095,
+        "user": 34638500,
+        "nice": 133400,
+        "sys": 10441800,
+        "idle": 280752300,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+        "speed": 4000,
+        "user": 35692000,
+        "nice": 95000,
+        "sys": 10562600,
+        "idle": 280216200,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+        "speed": 4032,
+        "user": 36102700,
+        "nice": 126100,
+        "sys": 10479200,
+        "idle": 280000500,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+        "speed": 4035,
+        "user": 30126200,
+        "nice": 107800,
+        "sys": 10127000,
+        "idle": 283180900,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+        "speed": 4053,
+        "user": 35283600,
+        "nice": 79400,
+        "sys": 10563300,
+        "idle": 280595900,
+        "irq": 0
+      },
+      {
+        "model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+        "speed": 4077,
+        "user": 35659300,
+        "nice": 101000,
+        "sys": 10693900,
+        "idle": 279780300,
+        "irq": 0
+      }
+    ],
+    "networkInterfaces": [
+      {
+        "name": "lo",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "127.0.0.1",
+        "netmask": "255.0.0.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "enp2s0",
+        "internal": false,
+        "mac": "04:7c:16:55:5a:4f",
+        "address": "192.168.14.165",
+        "netmask": "255.255.255.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "br-249f3886c96b",
+        "internal": false,
+        "mac": "02:42:5c:ab:ac:da",
+        "address": "172.28.0.1",
+        "netmask": "255.255.0.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "docker0",
+        "internal": false,
+        "mac": "02:42:98:fb:a7:3a",
+        "address": "172.17.0.1",
+        "netmask": "255.255.0.0",
+        "family": "IPv4"
+      },
+      {
+        "name": "lo",
+        "internal": true,
+        "mac": "00:00:00:00:00:00",
+        "address": "::1",
+        "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+        "family": "IPv6",
+        "scopeid": 0
+      },
+      {
+        "name": "enp2s0",
+        "internal": false,
+        "mac": "04:7c:16:55:5a:4f",
+        "address": "fe80::fad4:4c22:61d9:450d",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 2
+      },
+      {
+        "name": "br-249f3886c96b",
+        "internal": false,
+        "mac": "02:42:5c:ab:ac:da",
+        "address": "fe80::42:5cff:feab:acda",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 13
+      },
+      {
+        "name": "docker0",
+        "internal": false,
+        "mac": "02:42:98:fb:a7:3a",
+        "address": "fe80::42:98ff:fefb:a73a",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 15
+      },
+      {
+        "name": "veth05f9aea",
+        "internal": false,
+        "mac": "3a:00:de:fc:0a:84",
+        "address": "fe80::3800:deff:fefc:a84",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 17
+      },
+      {
+        "name": "vetha46dea8",
+        "internal": false,
+        "mac": "fa:80:3c:92:6a:25",
+        "address": "fe80::f880:3cff:fe92:6a25",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 19
+      },
+      {
+        "name": "veth7606aa5",
+        "internal": false,
+        "mac": "52:cb:70:65:f3:16",
+        "address": "fe80::50cb:70ff:fe65:f316",
+        "netmask": "ffff:ffff:ffff:ffff::",
+        "family": "IPv6",
+        "scopeid": 51
+      }
+    ],
+    "host": "tungnm-MS-7D82"
+  },
+  "javascriptStack": {
+    "message": "No stack.",
+    "stack": [
+      "Unavailable."
+    ]
+  },
+  "nativeStack": [
+    {
+      "pc": "0x0000000000b04935",
+      "symbol": "report::TriggerNodeReport(v8::Isolate*, node::Environment*, char const*, char const*, std::string const&, v8::Local<v8::String>) [node]"
+    },
+    {
+      "pc": "0x00000000009db9e3",
+      "symbol": "node::OnFatalError(char const*, char const*) [node]"
+    },
+    {
+      "pc": "0x0000000000b39f1e",
+      "symbol": "v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, bool) [node]"
+    },
+    {
+      "pc": "0x0000000000b3a299",
+      "symbol": "v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, bool) [node]"
+    },
+    {
+      "pc": "0x0000000000ce5635",
+      "symbol": " [node]"
+    },
+    {
+      "pc": "0x0000000000ce5cc6",
+      "symbol": "v8::internal::Heap::RecomputeLimits(v8::internal::GarbageCollector) [node]"
+    },
+    {
+      "pc": "0x0000000000cf1b5a",
+      "symbol": "v8::internal::Heap::PerformGarbageCollection(v8::internal::GarbageCollector, v8::GCCallbackFlags) [node]"
+    },
+    {
+      "pc": "0x0000000000cf2a65",
+      "symbol": "v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [node]"
+    },
+    {
+      "pc": "0x0000000000cf5478",
+      "symbol": "v8::internal::Heap::AllocateRawWithRetryOrFail(int, v8::internal::AllocationType, v8::internal::AllocationAlignment) [node]"
+    },
+    {
+      "pc": "0x0000000000cbbda7",
+      "symbol": "v8::internal::Factory::NewFillerObject(int, bool, v8::internal::AllocationType) [node]"
+    },
+    {
+      "pc": "0x0000000000ff1e0b",
+      "symbol": "v8::internal::Runtime_AllocateInYoungGeneration(int, unsigned long*, v8::internal::Isolate*) [node]"
+    },
+    {
+      "pc": "0x0000000001374fd9",
+      "symbol": " [node]"
+    }
+  ],
+  "javascriptHeap": {
+    "totalMemory": 2154156032,
+    "totalCommittedMemory": 2150725736,
+    "usedMemory": 2022499264,
+    "availableMemory": 54434368,
+    "memoryLimit": 2197815296,
+    "heapSpaces": {
+      "read_only_space": {
+        "memorySize": 262144,
+        "committedMemory": 32568,
+        "capacity": 261872,
+        "used": 32296,
+        "available": 229576
+      },
+      "new_space": {
+        "memorySize": 4194304,
+        "committedMemory": 1290304,
+        "capacity": 2094976,
+        "used": 303728,
+        "available": 1791248
+      },
+      "old_space": {
+        "memorySize": 2042474496,
+        "committedMemory": 2042290416,
+        "capacity": 1938350360,
+        "used": 1931691056,
+        "available": 6659304
+      },
+      "code_space": {
+        "memorySize": 1736704,
+        "committedMemory": 1628384,
+        "capacity": 1508032,
+        "used": 1508032,
+        "available": 0
+      },
+      "map_space": {
+        "memorySize": 34869248,
+        "committedMemory": 34864928,
+        "capacity": 18549920,
+        "used": 18549920,
+        "available": 0
+      },
+      "large_object_space": {
+        "memorySize": 69996544,
+        "committedMemory": 69996544,
+        "capacity": 69863576,
+        "used": 69863576,
+        "available": 0
+      },
+      "code_large_object_space": {
+        "memorySize": 622592,
+        "committedMemory": 622592,
+        "capacity": 550656,
+        "used": 550656,
+        "available": 0
+      },
+      "new_large_object_space": {
+        "memorySize": 0,
+        "committedMemory": 0,
+        "capacity": 2094976,
+        "used": 0,
+        "available": 2094976
+      }
+    }
+  },
+  "resourceUsage": {
+    "userCpuSeconds": 209.078,
+    "kernelCpuSeconds": 9.50447,
+    "cpuConsumptionPercent": 6.92594,
+    "maxRss": 3008335872,
+    "pageFaults": {
+      "IORequired": 9,
+      "IONotRequired": 2368006
+    },
+    "fsActivity": {
+      "reads": 5360,
+      "writes": 16
+    }
+  },
+  "uvthreadResourceUsage": {
+    "userCpuSeconds": 104.434,
+    "kernelCpuSeconds": 3.37359,
+    "cpuConsumptionPercent": 3.41594,
+    "fsActivity": {
+      "reads": 3616,
+      "writes": 16
+    }
+  },
+  "libuv": [
+  ],
+  "environmentVariables": {
+    "GJS_DEBUG_TOPICS": "JS ERROR;JS LOG",
+    "LESSOPEN": "| /usr/bin/lesspipe %s",
+    "npm_config_cache_lock_stale": "60000",
+    "npm_config_ham_it_up": "",
+    "npm_package_devDependencies_babel_core": "^6.26.0",
+    "npm_config_legacy_bundling": "",
+    "npm_config_sign_git_tag": "",
+    "USER": "tungnm",
+    "LC_TIME": "en_US.UTF-8",
+    "npm_package_devDependencies_eslint_formatter_pretty": "^1.3.0",
+    "npm_config_user_agent": "npm/6.12.1 node/v12.13.1 linux x64",
+    "npm_config_always_auth": "",
+    "npm_config_bin_links": "true",
+    "npm_config_key": "",
+    "XDG_SESSION_TYPE": "wayland",
+    "GIT_ASKPASS": "/usr/share/code/resources/app/extensions/git/dist/askpass.sh",
+    "npm_package_devDependencies_file_loader": "^1.1.6",
+    "npm_config_allow_same_version": "",
+    "npm_config_description": "true",
+    "npm_config_fetch_retries": "2",
+    "npm_config_heading": "npm",
+    "npm_config_if_present": "",
+    "npm_config_init_version": "1.0.0",
+    "npm_config_user": "1000",
+    "npm_node_execpath": "/home/tungnm/.nvm/versions/node/v12.13.1/bin/node",
+    "GO_PATH": "/home/tungnm/go",
+    "SHLVL": "1",
+    "npm_package_dependencies_material_design_iconic_font": "^2.2.0",
+    "npm_package_devDependencies_babel_preset_es2015": "^6.24.1",
+    "npm_package_devDependencies_url_loader": "^0.6.2",
+    "npm_config_prefer_online": "",
+    "npm_config_noproxy": "",
+    "HOME": "/home/tungnm",
+    "CHROME_DESKTOP": "code-url-handler.desktop",
+    "npm_config_force": "",
+    "TERM_PROGRAM_VERSION": "1.80.1",
+    "DESKTOP_SESSION": "ubuntu",
+    "NVM_BIN": "/home/tungnm/.nvm/versions/node/v12.13.1/bin",
+    "npm_package_dependencies_react_input_mask": "^1.2.2",
+    "npm_config_only": "",
+    "npm_config_read_only": "",
+    "NVM_INC": "/home/tungnm/.nvm/versions/node/v12.13.1/include/node",
+    "GIO_LAUNCHED_DESKTOP_FILE": "/usr/share/applications/code.desktop",
+    "npm_package_devDependencies_bootstrap": "^3.3.7",
+    "npm_config_cache_min": "10",
+    "npm_config_init_license": "ISC",
+    "GNOME_SHELL_SESSION_MODE": "ubuntu",
+    "GTK_MODULES": "gail:atk-bridge",
+    "VSCODE_GIT_ASKPASS_MAIN": "/usr/share/code/resources/app/extensions/git/dist/askpass-main.js",
+    "npm_config_editor": "vi",
+    "npm_config_rollback": "true",
+    "npm_config_tag_version_prefix": "v",
+    "LC_MONETARY": "en_US.UTF-8",
+    "VSCODE_GIT_ASKPASS_NODE": "/usr/share/code/code",
+    "MANAGERPID": "2837",
+    "npm_config_cache_max": "Infinity",
+    "npm_config_timing": "",
+    "npm_config_userconfig": "/home/tungnm/.npmrc",
+    "SYSTEMD_EXEC_PID": "3043",
+    "IM_CONFIG_CHECK_ENV": "1",
+    "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus",
+    "npm_package_keywords_0": "react",
+    "npm_package_dependencies_moment": "^2.20.1",
+    "npm_config_engine_strict": "",
+    "npm_config_init_author_name": "",
+    "npm_config_init_author_url": "",
+    "npm_config_preid": "",
+    "npm_config_tmp": "/tmp",
+    "COLORTERM": "truecolor",
+    "GIO_LAUNCHED_DESKTOP_FILE_PID": "5586",
+    "npm_package_description": "react-template",
+    "npm_package_keywords_1": "es6",
+    "npm_package_dependencies_react_router_dom": "^4.2.2",
+    "npm_package_devDependencies_babel_loader": "^7.1.2",
+    "npm_config_depth": "Infinity",
+    "npm_config_package_lock_only": "",
+    "npm_config_save_dev": "",
+    "npm_config_usage": "",
+    "NVM_DIR": "/home/tungnm/.nvm",
+    "npm_package_keywords_2": "babel",
+    "npm_package_readmeFilename": "README.md",
+    "npm_config_metrics_registry": "https://registry.npmjs.org/",
+    "npm_config_cafile": "",
+    "npm_config_otp": "",
+    "npm_config_package_lock": "true",
+    "npm_config_progress": "true",
+    "npm_config_https_proxy": "",
+    "npm_config_save_prod": "",
+    "IM_CONFIG_PHASE": "1",
+    "WAYLAND_DISPLAY": "wayland-0",
+    "npm_package_keywords_3": "webpack",
+    "npm_package_dependencies_sweetalert": "^2.1.0",
+    "npm_config_audit": "true",
+    "npm_config_cidr": "",
+    "npm_config_onload_script": "",
+    "npm_config_sso_type": "oauth",
+    "LOGNAME": "tungnm",
+    "npm_package_dependencies_react_datepicker": "^4.16.0",
+    "npm_package_devDependencies_eslint_plugin_import": "^2.8.0",
+    "npm_config_rebuild_bundle": "true",
+    "npm_config_save_bundle": "",
+    "npm_config_shell": "/bin/bash",
+    "JOURNAL_STREAM": "8:39006",
+    "_": "/home/tungnm/.nvm/versions/node/v12.13.1/bin/npm",
+    "npm_package_devDependencies_node_sass": "^4.7.2",
+    "npm_config_dry_run": "",
+    "npm_config_format_package_lock": "true",
+    "npm_config_prefix": "/home/tungnm/.nvm/versions/node/v12.13.1",
+    "XDG_SESSION_CLASS": "user",
+    "npm_package_scripts_lint": "eslint --cache --ignore-path .gitignore --format=node_modules/eslint-formatter-pretty . *.js",
+    "npm_package_dependencies_react_loadable": "^5.3.1",
+    "npm_config_scope": "",
+    "npm_config_browser": "",
+    "npm_config_cache_lock_wait": "10000",
+    "npm_config_ignore_prepublish": "",
+    "npm_config_registry": "https://registry.npmjs.org/",
+    "npm_config_save_optional": "",
+    "npm_config_searchopts": "",
+    "npm_config_versions": "",
+    "USERNAME": "tungnm",
+    "TERM": "xterm-256color",
+    "npm_config_cache": "/home/tungnm/.npm",
+    "npm_config_proxy": "",
+    "npm_config_send_metrics": "",
+    "GNOME_DESKTOP_SESSION_ID": "this-is-deprecated",
+    "npm_package_scripts_start": "node server.js",
+    "npm_config_global_style": "",
+    "npm_config_ignore_scripts": "",
+    "npm_config_version": "",
+    "npm_config_local_address": "",
+    "npm_config_viewer": "man",
+    "npm_config_node_gyp": "/home/tungnm/.nvm/versions/node/v12.13.1/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js",
+    "PATH": "/home/tungnm/.nvm/versions/node/v12.13.1/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/home/tungnm/Dev/ui/dashboard-r59/node_modules/.bin:/home/tungnm/.nvm/versions/node/v12.13.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/tungnm/go/bin:/home/tungnm/go/bin",
+    "SESSION_MANAGER": "local/tungnm-MS-7D82:@/tmp/.ICE-unix/3019,unix/tungnm-MS-7D82:/tmp/.ICE-unix/3019",
+    "INVOCATION_ID": "aeae71b777df4a5db0c8fe5c84c295b1",
+    "PAPERSIZE": "letter",
+    "npm_package_name": "react-template",
+    "npm_config_audit_level": "low",
+    "npm_config_prefer_offline": "",
+    "NODE": "/home/tungnm/.nvm/versions/node/v12.13.1/bin/node",
+    "XDG_MENU_PREFIX": "gnome-",
+    "LC_ADDRESS": "en_US.UTF-8",
+    "GNOME_SETUP_DISPLAY": ":1",
+    "XDG_RUNTIME_DIR": "/run/user/1000",
+    "GDK_BACKEND": "x11",
+    "npm_package_dependencies_babel_runtime": "^6.26.0",
+    "npm_package_dependencies_react_redux": "^5.0.7",
+    "npm_package_devDependencies_eslint_plugin_jsx_a11y": "^6.0.3",
+    "npm_config_color": "true",
+    "npm_config_sign_git_commit": "",
+    "DISPLAY": ":0",
+    "npm_package_devDependencies_eslint_config_airbnb": "^16.1.0",
+    "npm_config_fetch_retry_mintimeout": "10000",
+    "npm_config_maxsockets": "50",
+    "npm_config_offline": "",
+    "npm_config_sso_poll_frequency": "500",
+    "LANG": "en_US.UTF-8",
+    "XDG_CURRENT_DESKTOP": "Unity",
+    "LC_TELEPHONE": "en_US.UTF-8",
+    "npm_package_dependencies_react_dom": "^16.2.0",
+    "npm_package_dependencies_redux": "^3.7.2",
+    "npm_package_devDependencies_eslint": "^4.16.0",
+    "npm_package_devDependencies_webpack": "^3.10.0",
+    "npm_config_umask": "0002",
+    "XMODIFIERS": "@im=ibus",
+    "XDG_SESSION_DESKTOP": "ubuntu",
+    "XAUTHORITY": "/run/user/1000/.mutter-Xwaylandauth.01R181",
+    "LS_COLORS": "rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:",
+    "VSCODE_GIT_IPC_HANDLE": "/run/user/1000/vscode-git-eb052c9082.sock",
+    "TERM_PROGRAM": "vscode",
+    "npm_package_main": "index.js",
+    "npm_package_devDependencies_babel_plugin_react_transform": "^3.0.0",
+    "npm_package_gitHead": "2e2cdbb49922151b1ecf9b34b0f30cd9c717c4ee",
+    "npm_config_fetch_retry_maxtimeout": "60000",
+    "npm_config_loglevel": "notice",
+    "npm_config_logs_max": "10",
+    "npm_config_message": "%s",
+    "npm_lifecycle_script": "node server.js",
+    "SSH_AGENT_LAUNCHER": "gnome-keyring",
+    "SSH_AUTH_SOCK": "/run/user/1000/keyring/ssh",
+    "ORIGINAL_XDG_CURRENT_DESKTOP": "ubuntu:GNOME",
+    "npm_package_scripts_test": "npm run lint",
+    "npm_package_devDependencies_webpack_dev_server": "^2.11.1",
+    "npm_config_ca": "",
+    "npm_config_cert": "",
+    "npm_config_global": "",
+    "npm_config_link": "",
+    "SHELL": "/bin/bash",
+    "LC_NAME": "en_US.UTF-8",
+    "npm_package_version": "1.0.0",
+    "npm_package_dependencies_jquery": "^3.3.1",
+    "npm_config_access": "",
+    "npm_config_also": "",
+    "npm_config_save": "true",
+    "npm_config_unicode": "true",
+    "npm_lifecycle_event": "start",
+    "QT_ACCESSIBILITY": "1",
+    "GDMSESSION": "ubuntu",
+    "npm_package_scripts_build": "cross-env BABEL_ENV=production ./node_modules/.bin/webpack --config webpack.config.production.js",
+    "npm_package_dependencies_perfect_scrollbar": "^1.3.0",
+    "npm_config_argv": "{\"remain\":[],\"cooked\":[\"run\",\"start\"],\"original\":[\"run\",\"start\"]}",
+    "npm_config_before": "",
+    "npm_config_long": "",
+    "npm_config_production": "",
+    "npm_config_searchlimit": "20",
+    "npm_config_unsafe_perm": "true",
+    "npm_config_update_notifier": "true",
+    "LESSCLOSE": "/usr/bin/lesspipe %s %s",
+    "npm_package_dependencies_compression_webpack_plugin": "^1.1.6",
+    "npm_package_dependencies_react_table": "^6.8.6",
+    "npm_config_auth_type": "legacy",
+    "npm_config_node_version": "12.13.1",
+    "npm_config_tag": "latest",
+    "LC_MEASUREMENT": "en_US.UTF-8",
+    "npm_package_devDependencies_babel_preset_stage_0": "^6.24.1",
+    "npm_package_devDependencies_sass_loader": "^6.0.6",
+    "npm_config_git_tag_version": "true",
+    "npm_config_commit_hooks": "true",
+    "npm_config_script_shell": "",
+    "npm_config_shrinkwrap": "true",
+    "GJS_DEBUG_OUTPUT": "stderr",
+    "LC_IDENTIFICATION": "en_US.UTF-8",
+    "npm_package_license": "MIT",
+    "npm_package_dependencies_react_bootstrap": "^0.32.1",
+    "npm_package_devDependencies_eslint_plugin_compat": "^2.2.0",
+    "npm_package_devDependencies_eslint_plugin_react": "^7.6.1",
+    "npm_config_fetch_retry_factor": "10",
+    "npm_config_save_exact": "",
+    "npm_config_strict_ssl": "true",
+    "VSCODE_GIT_ASKPASS_EXTRA_ARGS": "--ms-enable-electron-run-as-node",
+    "QT_IM_MODULE": "ibus",
+    "npm_package_devDependencies_style_loader": "^0.20.1",
+    "npm_config_dev": "",
+    "npm_config_globalconfig": "/home/tungnm/.nvm/versions/node/v12.13.1/etc/npmrc",
+    "npm_config_init_module": "/home/tungnm/.npm-init.js",
+    "npm_config_parseable": "",
+    "PWD": "/home/tungnm/Dev/ui/dashboard-r59",
+    "npm_config_globalignorefile": "/home/tungnm/.nvm/versions/node/v12.13.1/etc/npmignore",
+    "npm_execpath": "/home/tungnm/.nvm/versions/node/v12.13.1/lib/node_modules/npm/bin/npm-cli.js",
+    "XDG_CONFIG_DIRS": "/etc/xdg/xdg-ubuntu:/etc/xdg",
+    "NVM_CD_FLAGS": "",
+    "XDG_DATA_DIRS": "/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop",
+    "npm_package_devDependencies_css_loader": "^0.28.9",
+    "npm_config_cache_lock_retries": "10",
+    "npm_config_searchstaleness": "900",
+    "LC_NUMERIC": "en_US.UTF-8",
+    "npm_package_devDependencies_cross_env": "^5.1.3",
+    "npm_config_node_options": "",
+    "npm_config_save_prefix": "^",
+    "npm_config_scripts_prepend_node_path": "warn-only",
+    "LC_PAPER": "en_US.UTF-8",
+    "npm_package_devDependencies_babel_eslint": "^8.2.1",
+    "npm_package_devDependencies_babel_plugin_transform_runtime": "^6.23.0",
+    "npm_package_devDependencies_react_transform_hmr": "^1.0.4",
+    "npm_config_group": "1000",
+    "npm_config_init_author_email": "",
+    "npm_config_searchexclude": "",
+    "npm_package_devDependencies_eslint_plugin_promise": "^3.6.0",
+    "npm_config_git": "git",
+    "npm_config_optional": "true",
+    "npm_package_dependencies_react": "^16.2.0",
+    "npm_package_devDependencies_babel_preset_react": "^6.24.1",
+    "npm_config_json": "",
+    "INIT_CWD": "/home/tungnm/Dev/ui/dashboard-r59"
+  },
+  "userLimits": {
+    "core_file_size_blocks": {
+      "soft": 0,
+      "hard": "unlimited"
+    },
+    "data_seg_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "file_size_blocks": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_locked_memory_bytes": {
+      "soft": 2072469504,
+      "hard": 2072469504
+    },
+    "max_memory_size_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "open_files": {
+      "soft": 1048576,
+      "hard": 1048576
+    },
+    "stack_size_bytes": {
+      "soft": 8388608,
+      "hard": "unlimited"
+    },
+    "cpu_time_seconds": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    },
+    "max_user_processes": {
+      "soft": 62935,
+      "hard": 62935
+    },
+    "virtual_memory_kbytes": {
+      "soft": "unlimited",
+      "hard": "unlimited"
+    }
+  },
+  "sharedObjects": [
+    "linux-vdso.so.1",
+    "/lib/x86_64-linux-gnu/libdl.so.2",
+    "/lib/x86_64-linux-gnu/libstdc++.so.6",
+    "/lib/x86_64-linux-gnu/libm.so.6",
+    "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+    "/lib/x86_64-linux-gnu/libpthread.so.0",
+    "/lib/x86_64-linux-gnu/libc.so.6",
+    "/lib64/ld-linux-x86-64.so.2",
+    "/home/tungnm/Dev/ui/dashboard-r59/node_modules/node-sass/vendor/linux-x64-72/binding.node"
+  ]
+}

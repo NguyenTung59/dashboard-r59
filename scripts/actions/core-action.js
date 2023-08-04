@@ -40,7 +40,7 @@ export async function GetMetrics(dispatch, payload) {
 	};
 
   try {
-		let response = await fetch(`${payload.url}/api/agent/process/metrics`, requestOptions);
+		let response = await fetch(`${payload.url}/api/agent/process/core/metrics`, requestOptions);
 		let result = await response.json();
 		if (result.code > 200) return
 
@@ -88,7 +88,7 @@ export async function GetProcessCore(dispatch, payload) {
 	};
 
 	try {
-		let response = await fetch(`${payload.url}/api/agent/process?name=${payload.name}`, requestOptions);
+		let response = await fetch(`${payload.url}/api/agent/process/core?name=${payload.name}`, requestOptions);
 		let result = await response.json();
     switch (payload.name) {
       case 'censor':
@@ -126,7 +126,7 @@ export async function GetProcessExporters(dispatch, payload) {
 	};
 
 	try {
-		let response = await fetch(`${payload.url}/api/agent/process/list`, requestOptions);
+		let response = await fetch(`${payload.url}/api/agent/process/exporter/list`, requestOptions);
 		let result = await response.json();
 
 		if (result) {

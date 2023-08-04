@@ -48,6 +48,7 @@ export default class FormComponent extends Component {
 		});
 	}
 	render() {
+		console.log("run here")
 		return (
 			<Fragment>
 				<ModuleHeader text="Form Components" />

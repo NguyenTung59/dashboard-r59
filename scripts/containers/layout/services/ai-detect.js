@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux';
-import HeaderModule from '../../../common/module-header'
-
 import {Row, Col} from 'react-bootstrap'
 import { GetProcessCore, GetSystemInfo, GetAgents } from '../../../actions/core-action';
 import {SecondsToDhms} from '../utilities/utility'
+import { checkPercentWarning, checkTrafficWarning } from '../utilities/check-warning';
+import ListAgents from '../forms/agents/form-list-agents';
 import FormSchedulerRefresh from '../forms/form-scheduler-refresh';
+import HeaderModule from '../../../common/module-header'
 
 const ROOT_URL = 'http://192.168.14.165:8000';
 const PORT = 8000
@@ -88,17 +89,6 @@ class AIDectect extends Component {
     this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
   } 
 
-  onSwitchAgent(hostname, ev){
-    this.props.cores.agents.map((a, i) => {
-      if (a.name == hostname) {
-        this.setState({
-          current_agent: a
-        })
-        this.props.dispatch({ type: 'GET_CURRENT_AGENT_DA', payload: {id_current_agent: i} })
-      }
-    })
-  }
-
   turnOffService() {
     console.log("turn off deep-analyst ")
   }
@@ -146,6 +136,7 @@ class AIDectect extends Component {
                       <li className="ng-binding">
                         <i className="zmdi zmdi-desktop-mac"></i> Host Name </li>
                       <li className="ng-binding">{current_da.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
+                      <li className="ng-binding"><i className="zmdi zmdi-time"></i> Start time </li>
                       <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(current_da.runtime)}</li>
                     </ul>
                   </Col>
@@ -159,6 +150,7 @@ class AIDectect extends Component {
                       <li className="ng-binding"> {current_da.uuid != "" ? current_da.uuid : "-"}</li>
                       <li className="ng-binding"> {current_da.hostname != "" ? current_da.hostname : "localhost"}</li>
                       <li className="ng-binding"> {current_da.status > 0 ? "Running" : "Stopped"} </li>
+                      <li className="ng-binding"> {current_da && current_da.start_time ? current_da.start_time : "-"} </li>
                       <li className="ng-binding">                     
                         <Col sm={4}> <a onClick={this.turnOffService.bind(this)}><i className="zmdi zmdi-power"></i></a></Col>
                         <Col sm={4}> <a onClick={this.resetService.bind(this)}><i className="zmdi zmdi-refresh"></i></a></Col>
@@ -171,26 +163,15 @@ class AIDectect extends Component {
             </div>
 					</Col>
           <Col sm={5}>
-            <div className="card">
-              <div className="card-header ch-alt">
-                <h2>
-                  List Agent
-                </h2>
-              </div>
-              <div className="card-body card-padding">
-                <Row className="pmo-contact">
-                  {cores.agents.map((a, i) => (
-                    <Col sm={12/cores.agents.length} key={i} onClick={this.onSwitchAgent.bind(this, a.name)}>
-                        <ul className="list-unstyled module-action">
-                          <li>
-                            <a><i className="zmdi zmdi-desktop-mac"></i> {a.name}</a>
-                          </li>
-                        </ul>
-                    </Col>)
-                  )}
-                </Row>
-              </div>
-            </div>
+            {/* list agents */}
+            <ListAgents 
+              service={{
+                name: this.state.name,
+                id_agent: this.props.ais.ai_task.id_agent_ai,
+              }}
+              dispatch={this.props.dispatch}
+              cores={cores}
+            />
             {/* scheduler  */}
             <FormSchedulerRefresh 
               location={this.props.location} 
@@ -206,7 +187,7 @@ class AIDectect extends Component {
           <h3>Performance</h3>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className={checkPercentWarning(current_da.cpu_usage)}>
                 <h5>
                   CPU usage
                 </h5>
@@ -218,7 +199,7 @@ class AIDectect extends Component {
           </Col>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className={checkPercentWarning(current_da.memory_usage)}>
                 <h5>
                   RAM usage
                 </h5>
@@ -230,7 +211,7 @@ class AIDectect extends Component {
           </Col>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className={checkPercentWarning(current_da.disk_usage)}>
                 <h5>
                   Disk usage
                 </h5>
@@ -242,7 +223,7 @@ class AIDectect extends Component {
           </Col>
           <Col sm={3}>
             <div className="card">
-              <div className="card-header ch-alt">
+              <div className={checkTrafficWarning(current_da.traffic_volume)}>
                 <h5>
                   Traffic 
                 </h5>

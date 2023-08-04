@@ -110,56 +110,54 @@ class FormSchedulerRefresh extends Component {
 
 		return (
 			<Fragment>
-				<Row>
-          <div className="card">
-                <div className="card-header ch-alt">
-                  <Row>
-                    <Col sm={6}>
-                      <h2>
-                        Scheduler 
-                      </h2>
-                    </Col>
-                    <Col sm={6}>
-                      <Switch className="toggle-switch enable-scheduler" switcher="switch-cyan" switchColor="rgba(0,188,212,0.5)" switchActive={"#00bcd4"}>
-                        <label className="ts-label scheduler-enable" htmlFor="ts-cyan">Enable</label>
-                        <input type="checkbox" id="ts-cyan" hidden="hidden" defaultChecked={this.state.enabled}/>
-                        <label className="ts-helper" htmlFor="ts-cyan" onClick={this.onEnableScheduler}></label>
-                      </Switch>
-                    </Col>
-                  </Row>
-                </div>
-                <div className="card-body card-padding">
-                  <form className="form-horizontal" role="form">
-                    <div className="form-group m-b-20" >
-                      <OverlayTrigger overlay={<Tooltip id={"interval-3t"}>{`Milisecond run task refesh source`}</Tooltip>} placement="top">
-                        <label htmlFor="interval" className="col-sm-3 control-label">Interval</label>
-                      </OverlayTrigger>
-                      <div className="col-sm-8">
-                        <Input className="form-control" placeholder="milisecond" value={this.state.interval} name="interval" onChange={(ev) => this.handleChangeInterval(ev)}/>
-                      </div>
-                    </div>
-
-                    <div className="form-group" >
-                      <label htmlFor="start-time" className="col-sm-3 control-label">Start Time</label>
-                      <div className="col-sm-8">
-                      <DatePicker
-                        // showIcon
-                        selected={this.state.start_date_blue}
-                        onChange={(date) => this.handleChange_blue(date)}
-                        showTimeSelect
-                        filterTime={filterPassedTime}
-                        // showTimeSelectOnly
-                        // intervals={15}
-                        timeCaption="Time"
-                        dateFormat="MM/dd/yyyy h:mm aa"
-                        showTimeInput
-                      />
-                       </div>
-                    </div>
-                    </form>
+    <div className="card">
+          <div className="card-header ch-alt">
+            <Row>
+              <Col sm={6}>
+                <h2>
+                  Scheduler 
+                </h2>
+              </Col>
+              <Col sm={6}>
+                <Switch className="toggle-switch enable-scheduler" switcher="switch-cyan" switchColor="rgba(0,188,212,0.5)" switchActive={"#00bcd4"}>
+                  <label className="ts-label scheduler-enable" htmlFor="ts-cyan">Enable</label>
+                  <input type="checkbox" id="ts-cyan" hidden="hidden" defaultChecked={this.state.enabled}/>
+                  <label className="ts-helper" htmlFor="ts-cyan" onClick={this.onEnableScheduler}></label>
+                </Switch>
+              </Col>
+            </Row>
+          </div>
+          <div className="card-body card-padding">
+            <form className="form-horizontal" role="form">
+              <div className="form-group m-b-20" >
+                <OverlayTrigger overlay={<Tooltip id={"interval-3t"}>{`Milisecond run task refesh source`}</Tooltip>} placement="top">
+                  <label htmlFor="interval" className="col-sm-3 control-label">Interval</label>
+                </OverlayTrigger>
+                <div className="col-sm-8">
+                  <Input className="form-control" placeholder="milisecond" value={this.state.interval} name="interval" onChange={(ev) => this.handleChangeInterval(ev)}/>
                 </div>
               </div>
-				</Row>
+
+              <div className="form-group" >
+                <label htmlFor="start-time" className="col-sm-3 control-label">Start Time</label>
+                <div className="col-sm-8">
+                <DatePicker
+                  // showIcon
+                  selected={this.state.start_date_blue}
+                  onChange={(date) => this.handleChange_blue(date)}
+                  showTimeSelect
+                  filterTime={filterPassedTime}
+                  // showTimeSelectOnly
+                  // intervals={15}
+                  timeCaption="Time"
+                  dateFormat="MM/dd/yyyy h:mm aa"
+                  showTimeInput
+                />
+                  </div>
+              </div>
+              </form>
+          </div>
+        </div>
 			</Fragment>
 		)
 	}

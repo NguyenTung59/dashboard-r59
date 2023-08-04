@@ -391,6 +391,11 @@
     padding: 3px 6px;
 }
 
+.search-process {
+    justify-content: end;
+    display: flex;
+}
+
 .search-process input[type=search] {
     -webkit-appearance: auto;
 }

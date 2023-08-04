@@ -40,7 +40,7 @@ export default function AIReducer(state = initialAIState, action){
 				deep_analyst: action.payload.deep_ai
 			};
     // service da
-    case 'GET_CURRENT_AGENT_DA':
+    case 'GET_CURRENT_AGENT_AI-DETECT':
       return {
         ...state,
         ai_task: {

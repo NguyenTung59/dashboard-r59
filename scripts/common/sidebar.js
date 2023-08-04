@@ -84,6 +84,7 @@ class SideBar extends Component {
 
 	render() {
 		const { users } = this.props
+		// console.log(this.state)
 		return (
 			<Fragment>
 				<aside id="sidebarContainer">

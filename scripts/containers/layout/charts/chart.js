@@ -181,6 +181,16 @@ class Chart extends Component {
 				noColumns: 0,
 				backgroundColor: "white",
 				lineWidth: 0
+			},
+			tooltip: true,
+			tooltipOpts: {
+				content: "%x : %y", // show percentages, rounding to 2 decimal places
+				shifts: {
+					x: 20,
+					y: 0
+				},
+				defaultTheme: false,
+				cssClass: 'flot-tooltip'
 			}
 		});
 

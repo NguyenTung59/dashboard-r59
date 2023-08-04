@@ -63,13 +63,16 @@ class Home extends Component {
 					"price": 690
 				}
 			],
-			metrics: this.props.metrics.data
+			metrics: this.props.metrics.data,
+			data_bw: this.props.metrics.data_bw.length,
+			data_pkts: this.props.metrics.data_pkts,
+			data_time: this.props.metrics.data_time,
 		}
 		this.sparkline = this.props.sparkline;
 		this.changeValue = this.changeValue.bind(this);
 		this.dynamicChart = this.dynamicChart.bind(this)
 	}
-	componentDidMount(){
+	async componentDidMount(){
 		notify.growl({
 			message: "Welcome back Rowel de Guzman",
 		}, {
@@ -95,7 +98,7 @@ class Home extends Component {
 			}
 		});
 
-		this.dynamicChart();
+		this.dynamicChart()
 	}
 
 	changeValue(event) {
@@ -105,78 +108,100 @@ class Home extends Component {
 		})
 	}
 
-	dynamicChart() {
-		var data = [],
+	async dynamicChart() {
+		var {dispatch} = this.props
+		var data_bw = this.props.metrics.data_bw,
+			data_pkts = this.props.metrics.data_pkts,
+			data_time = this.props.metrics.data_time,
 			totalPoints = 100,
 			j = 0;
 
-		function getDataMetrics(props) {
-			if (data.length > 0)
-				data = data.slice(1);
-			while (data.length < totalPoints) {
-				var prev = data.length > 0 ? data[data.length - 1] : 50,
-					y = prev + Math.random() * 10 - 5;
-
-				if (y < 0) {
-					y = 0;
-				} else if (y > 90) {
-					y = 90;
-				}
-				data.push(y);
-
-				try {
-					// let data_metrics = await GetMetrics(props.dispatch, {url: `http://192.168.14.151:8000`});
-					// console.log("metrics data ", data_metrics)
-
-					// data.push(data_metrics.in_pkts_speed)
-				} catch (error) {
-					console.log(error)
-				}
-			}
-			var res = [];
-			for (var i = 0; i < data.length; ++i) {
-				res.push([j++, data[i]])
-			}
-
-			return res;
-		}
-		// console.log(this.props.metrics.data)
-
-		// console.log(getDataMetrics())
-		var updateInterval = 30;
-		var plot_bw = $.plot("#dynamic-chart", [getDataMetrics(this.props)], {
-			series: {
-				label: "Server Process Data",
-				lines: {
-					show: true,
-					lineWidth: 0.2,
-					fill: 0.6
-				},
-
-				color: '#00BCD4',
-				shadowSize: 0
-			},
-			yaxis: {
-				min: 0,
-				max: 100,
-				tickColor: '#eee',
-				font: {
-					lineHeight: 13,
-					style: "normal",
-					color: "#9f9f9f",
-				},
-				shadowSize: 0,
-			},
-			xaxis: {
+		var dynamicData = new Array();
+		dynamicData.push({
+			data: data_bw,
+			label: 'Traffic (kb/s)',
+			lines: {
 				show: true,
-				tickColor: '#eee',
-				font: {
-					lineHeight: 13,
-					style: "normal",
-					color: "#9f9f9f",
-				},
-				shadowSize: 0,
+				lineWidth: 0.2,
+				fill: 0.6
 			},
+			color: '#ff9800',
+			shadowSize: 0,
+		});
+		dynamicData.push({
+			data: data_pkts,
+			label: 'Pkts_Traffic (pk/s)',
+			lines: {
+				show: true,
+				lineWidth: 0.2,
+				fill: 0.6
+			},
+			color: '#00BCD4',
+			shadowSize: 0,
+		});
+
+
+		async function getDataMetrics() {
+			var res_bw = [];
+			var res_pkts = [];
+			var d = new Date();
+			var n = d.getTime();
+
+			if (data_bw.length > 0 )
+				data_bw = data_bw.slice(1);
+				data_pkts = data_pkts.slice(1);
+				data_time = data_time.slice(1);
+			while (data_bw.length < totalPoints) {
+				var y, pkts = 0
+				
+				if (j > 99) {
+					let data_metrics = await GetMetrics(dispatch, {url: `http://192.168.14.151:8000`});
+					if (data_metrics) {
+						y = data_metrics.in_speed/1000
+						pkts = data_metrics.in_pkts_speed
+					}
+					n = n + 1000
+				}
+				data_time.push(n)
+				data_bw.push(y);
+				data_pkts.push(pkts)
+			}
+
+			for (var i = 0; i < data_bw.length; ++i) {
+				j++
+				res_bw.push([data_time[i], data_bw[i]])
+				res_pkts.push([data_time[i], data_pkts[i]])
+			}
+
+			for (var i=0; i < dynamicData.length; i++ ) {
+				if (i == 0) {
+					dynamicData[i].data = res_bw
+				} else {
+					dynamicData[i].data = res_pkts
+				}
+			}
+
+			dispatch({type: "SET_DATA_BW", payload: {data: data_bw}})
+			dispatch({type: "SET_DATA_PKTS",  payload: {data: data_pkts}})
+			dispatch({type: "SET_DATA_TIME",  payload: {data: data_time}})
+
+			return dynamicData;
+		}
+
+		var updateInterval = 1000;
+
+		var plot = $.plot("#dynamic-chart", await getDataMetrics(), {
+			// series: {
+			// 	label: "Traffic",
+			// 	lines: {
+			// 		show: true,
+			// 		lineWidth: 0.2,
+			// 		fill: 0.6
+			// 	},
+			// 	color: '#00BCD4',
+			// 	shadowSize: 0
+			// },
+			
 			grid: {
 				borderWidth: 1,
 				borderColor: '#eee',
@@ -185,24 +210,61 @@ class Home extends Component {
 				clickable: true,
 				mouseActiveRadius: 6,
 			},
+			xaxis: {
+				show: true,
+				tickColor: '#eee',
+				mode: "time",
+				minTickSize: [1, "second"],
+				// timeformat: '%Y-%m-%d %H:%M:%S',
+				timeformat: '%H:%M:%S',
+				timezone: "browser",
+				font: {
+					lineHeight: 13,
+					style: "normal",
+					color: "#9f9f9f",
+				},
+				shadowSize: 0,
+			},
+			yaxis: {
+				// min: 0,
+				// max: ymax, 
+				tickColor: '#eee',
+				font: {
+					lineHeight: 13,
+					style: "normal",
+					color: "#9f9f9f",
+				},
+				shadowSize: 0,
+			},
 			legend: {
 				container: '.flc-dynamic',
 				backgroundOpacity: 0.5,
 				noColumns: 0,
 				backgroundColor: "white",
 				lineWidth: 0
+			},
+			tooltip: true,
+			tooltipOpts: {
+				content: "%s %x: %y", // show percentages, rounding to 2 decimal places
+				shifts: {
+					x: 20,
+					y: 0
+				},
+				defaultTheme: false,
+				cssClass: 'flot-tooltip'
 			}
 		});
 
-		function update(props) {
-			plot_bw.setData([getDataMetrics(props)]);
-			plot_bw.setupGrid();
-			plot_bw.draw();
+		async function update() {
+			// console.log(plot)
+			plot.setData(await getDataMetrics());
+			plot.setupGrid();
+			plot.draw();
 			setTimeout(update, updateInterval);
 		}
-		update(this.props);
-	}
+		// update();
 
+	}
 
 	render() {
 		/* Sparkline is from reducer */
@@ -213,21 +275,20 @@ class Home extends Component {
 				<div className="row">
 					<div className="col-sm-12">
 
-
 						{/* Dynamic Chart */}
 						<Row>
 							<Col sm={12}>
-							<div className="card">
-								<div className="card-header">
-									<h2>Dynamic Chart</h2>
+								<div className="card">
+									<div className="card-header">
+										<h2>Dynamic Chart</h2>
+									</div>
+									<div className="card-body card-padding">
+										<div id="dynamic-chart" className="flot-chart"></div>
+										<div className="flc-dynamic"></div>
+									</div>
 								</div>
-								<div className="card-body card-padding">
-									<div id="dynamic-chart" className="flot-chart"></div>
-									<div className="flc-dynamic"></div>
-								</div>
-							</div>
-						</Col>
-					</Row>
+							</Col>
+						</Row>
 
 						<div className="mini-charts">
 							<div className="row">
@@ -282,7 +343,7 @@ class Home extends Component {
 						<div className="dash-widgets">
 							<Row>
 								{/* analyze wigets for the past 30 days*/}
-								<Col sm={12} md={6}>
+								{/* <Col sm={12} md={6}>
 									<div id="site-visits" className="dash-widget-item bgm-teal">
 										<div className="dash-widget-header">
 											<div className="p-20">
@@ -307,7 +368,7 @@ class Home extends Component {
 											<h3 className="m-0 f-400">13,965</h3>
 										</div>
 									</div>
-								</Col>
+								</Col> */}
 								{/* Best Sellings */}
 								{/* <Col sm={6} md={3}>
 									<div id="best-selling" className="dash-widget-item">
@@ -339,7 +400,7 @@ class Home extends Component {
 									</div>
 								</Col> */}
 								{/* Recent Items */}
-								<Col sm={12} md={6} lg={6}>
+								{/* <Col sm={12} md={6} lg={6}>
 									<div className="card">
 										<div className="card-header bgm-teal">
 											<h2>Recent Items
@@ -375,7 +436,7 @@ class Home extends Component {
 											</table>
 										</div>
 									</div>
-								</Col>
+								</Col> */}
 							</Row>
 						</div>
 						<div className="form-group">
