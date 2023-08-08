@@ -28,12 +28,26 @@ export const initialAIState = {
     vitual_machine_cluster_usage:1,
     failed_vitual_machine_cluster:1,
     start_time:"Jun14",
-    runtime: 122706
+    runtime: 122706,
+    command: ""
   },
+  config: {
+    name: "ai-detect",
+    // type: "services",
+    cmd: "",
+    dir: "",
+    bin: "",
+    script: "start.sh"
+  }
 };
 
 export default function AIReducer(state = initialAIState, action){
 	switch (action.type) {
+    case 'SET_CONFIG_DEEP_ANALYST':
+      return {
+        ...state,
+        config: action.payload.config
+      };
     case 'GET_DEEP_ANALYST':
 			return {
 				...state,

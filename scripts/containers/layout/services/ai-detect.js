@@ -7,6 +7,7 @@ import { checkPercentWarning, checkTrafficWarning } from '../utilities/check-war
 import ListAgents from '../forms/agents/form-list-agents';
 import FormSchedulerRefresh from '../forms/form-scheduler-refresh';
 import HeaderModule from '../../../common/module-header'
+import ControlProcess from '../../../components/control'
 
 const ROOT_URL = 'http://192.168.14.165:8000';
 const PORT = 8000
@@ -34,18 +35,18 @@ class AIDectect extends Component {
       //     system: resSys
       // })}
 
-      const agents = await GetAgents(this.props.dispatch)
-      const result = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
+      await GetAgents(this.props.dispatch)
+      await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
 
       let refresh_init = setInterval(async () => {
         if (this.props.ais.ai_task.enabled) {
           if (!this.props.ais.ai_task.check_task) {
             if (this.props.ais.ai_task.timer == 0 ) {
               let refresh_ai = setInterval(async () => {
-              // console.log("task running .... ")
-              const res = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
-              // console.log("res ", res)
-              this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
+                var current_agent = this.props.cores.agents[this.props.ais.ai_task.id_agent_ai]
+
+                await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${current_agent.ip}:${PORT}`});
+                this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
               }, this.props.ais.ai_task.interval)
 
               this.setState({
@@ -152,9 +153,26 @@ class AIDectect extends Component {
                       <li className="ng-binding"> {current_da.status > 0 ? "Running" : "Stopped"} </li>
                       <li className="ng-binding"> {current_da && current_da.start_time ? current_da.start_time : "-"} </li>
                       <li className="ng-binding">                     
-                        <Col sm={4}> <a onClick={this.turnOffService.bind(this)}><i className="zmdi zmdi-power"></i></a></Col>
+                        {/* <Col sm={4}> <a onClick={this.turnOffService.bind(this)}><i className="zmdi zmdi-power"></i></a></Col>
                         <Col sm={4}> <a onClick={this.resetService.bind(this)}><i className="zmdi zmdi-refresh"></i></a></Col>
-                        <Col sm={4}> <a onClick={this.configService.bind(this)}><i className="zmdi zmdi-wrench"></i></a></Col> 
+                        <Col sm={4}> <a onClick={this.configService.bind(this)}><i className="zmdi zmdi-wrench"></i></a></Col>  */}
+                        <ControlProcess 
+                          service={{
+                            name: this.state.name,
+                            status: current_da.status,
+                            pid: current_da.pid
+                          }}
+                          config={{
+                            name: this.state.name,
+                            cmd: this.props.ais.config.cmd,
+                            dir: this.props.ais.config.dir,
+                            bin: this.props.ais.config.bin,
+                            script: this.props.ais.config.script
+                          }}
+                          current_process={current_da}
+                          dispatch={this.props.dispatch}
+                          current_agent={this.props.cores.agents[this.props.ais.ai_task.id_agent_ai]}
+                        />
                       </li>
                     </ul>
                   </Col>

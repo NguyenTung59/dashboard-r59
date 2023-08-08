@@ -31,33 +31,33 @@ class FormSchedulerRefresh extends Component {
 	}
 
   componentDidMount() {
-    let countdown_timer = setInterval(() => {
-      // console.log("scheduler ... ", this.props.cores.censor_task, this.state.service)
-      let now = new Date
-      let timer = Math.round(this.state.start_date_blue.getTime() / 1000) - Math.round(now.getTime() / 1000)
+    // let countdown_timer = setInterval(() => {
+    //   // console.log("scheduler ... ", this.props.cores.censor_task, this.state.service)
+    //   let now = new Date
+    //   let timer = Math.round(this.state.start_date_blue.getTime() / 1000) - Math.round(now.getTime() / 1000)
 
-      if (timer >= 0) {
-        this.props.dispatch({type: `SET_${this.state.service}_TIMER`, payload: {timer: timer}})
-        this.setState({
-          timer: timer
-        })
-      } else {
-        let after_one_hour = now.getTime() + (1000 * initialState.timer_default)
-        let future = new Date(after_one_hour)
-        this.setState({
-          start_date_blue: future
-        })
-      }
+    //   if (timer >= 0) {
+    //     this.props.dispatch({type: `SET_${this.state.service}_TIMER`, payload: {timer: timer}})
+    //     this.setState({
+    //       timer: timer
+    //     })
+    //   } else {
+    //     let after_one_hour = now.getTime() + (1000 * initialState.timer_default)
+    //     let future = new Date(after_one_hour)
+    //     this.setState({
+    //       start_date_blue: future
+    //     })
+    //   }
 
-    }, 1000)
+    // }, 1000)
 
-    this.setState({
-      scheduler_task: [
-        {
-          id: countdown_timer,
-          name: "countdown_timer"
-        }],
-    })
+    // this.setState({
+    //   scheduler_task: [
+    //     {
+    //       id: countdown_timer,
+    //       name: "countdown_timer"
+    //     }],
+    // })
   }
 
   componentWillUnmount() {
@@ -108,9 +108,10 @@ class FormSchedulerRefresh extends Component {
       return currentDate.getTime() < selectedDate.getTime();
     };
 
+    // console.log("run here")
 		return (
 			<Fragment>
-    <div className="card">
+        <div className="card">
           <div className="card-header ch-alt">
             <Row>
               <Col sm={6}>

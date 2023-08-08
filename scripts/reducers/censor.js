@@ -31,12 +31,25 @@ export const initialCensorState = {
       fail_rule_amount: 0,
       censor_version: "v1.0.0.1",
       start_time: "May23",
-      runtime: 4492724
-    }
+      runtime: 4492724,
+      command: "/opt/cerberus/censor/censor"
+    },
+  config: {
+    name: "censor",
+    cmd: "/opt/cerberus/censor/censor",
+    dir: "opt/cerberus/censor",
+    bin: "",
+    script: "start.sh"
+  }
 };
 
 export default function CensorReducer(state = initialCensorState, action){
 	switch (action.type) {
+    case 'SET_CONFIG_CENSOR':
+      return {
+        ...state,
+        config: action.payload.config
+      };
 		case 'GET_CENSOR':
 			return {
 				...state,

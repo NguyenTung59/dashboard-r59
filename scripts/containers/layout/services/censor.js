@@ -1,12 +1,13 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux';
 import {Row, Col} from 'react-bootstrap'
-import { GetAgents, GetProcessCore } from '../../../actions/core-action';
+import { GetAgents, GetProcessCore, StartProcessCore, StopProcessCore } from '../../../actions/core-action';
 import {SecondsToDhms} from '../utilities/utility'
 import { checkPercentWarning, checkTrafficWarning } from '../utilities/check-warning';
 import HeaderModule from '../../../common/module-header'
 import FormSchedulerRefresh from '../forms/form-scheduler-refresh';
 import ListAgents from '../forms/agents/form-list-agents';
+import ControlProcess from '../../../components/control'
 
 // const ROOT_URL = 'http://192.168.14.165:8000';
 const PORT = 8000
@@ -21,6 +22,7 @@ class Censor extends Component {
       current_agent: this.props.cores.agents[this.props.censors.censor_task.id_agent_censor],
       init_refresh: null,
       scheduler_task: [],
+      status: false,
 		}
   }
 
@@ -35,14 +37,13 @@ class Censor extends Component {
 
       await GetAgents(this.props.dispatch)
       await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
-
       let refresh_init = setInterval(async () => {
         if (this.props.censors.censor_task.enabled) {
           if (!this.props.censors.censor_task.check_task) {
             if (this.props.censors.censor_task.timer == 0 ) {
               let refresh_censor = setInterval(async () => {
-              // console.log("task running .... ")
-              const res = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
+              var current_agent = this.props.cores.agents[this.props.censors.censor_task.id_agent_censor]
+              await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${current_agent.ip}:${PORT}`});
               this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
               }, this.props.censors.censor_task.interval)
 
@@ -59,13 +60,12 @@ class Censor extends Component {
           }
         } else {
           if (this.state.scheduler_task.length > 0){
-            // console.log("task stopped .... ")
             this.state.scheduler_task.map((task, i) => {
               clearInterval(task.id)
             })
             this.setState({scheduler_task: []})
           }
-          this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
+          // this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
         }
 
       }, 1000);
@@ -89,22 +89,10 @@ class Censor extends Component {
     this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
   } 
 
-  turnOffService() {
-    console.log("turn off censor ")
-  }
-  
-  resetService() {
-    console.log("reset censor ")
-  }
-
-  configService() {
-    console.log("config censor")
-  }
-
   render() {
     const {cores, censors} = this.props
     const current_censor = censors.censor
-
+    
     return (
       <Fragment>
 				<HeaderModule text="Censor"/>
@@ -154,16 +142,32 @@ class Censor extends Component {
                       <li className="ng-binding"> {current_censor.status > 0 ? "Running" : "Stopped"} </li>
                       <li className="ng-binding"> {current_censor && current_censor.start_time ? current_censor.start_time : "-"} </li>
                       <li className="ng-binding">                     
-                        <Col sm={4}> <a onClick={this.turnOffService.bind(this)}><i className="zmdi zmdi-power"></i></a></Col>
-                        <Col sm={4}> <a onClick={this.resetService.bind(this)}><i className="zmdi zmdi-refresh"></i></a></Col>
-                        <Col sm={4}> <a onClick={this.configService.bind(this)}><i className="zmdi zmdi-wrench"></i></a></Col> 
+                        {/* <Col sm={4}> {current_censor.status > 0 ? <a onClick={this.turnOffService.bind(this, current_censor.pid)} style={{color: 'cyan'}}><i className="zmdi zmdi-power"></i></a> : <a onClick={this.turnOnService.bind(this)} style={{color: 'red'}}><i className="zmdi zmdi-power"></i></a>}</Col>
+                        <Col sm={4}> <a onClick={this.resetService}><i className="zmdi zmdi-refresh"></i></a></Col>
+                        <Col sm={4}> <a onClick={this.configService}><i className="zmdi zmdi-wrench"></i></a></Col>  */}
+                        <ControlProcess 
+                          service={{
+                            name: this.state.name,
+                            status: current_censor.status,
+                            pid: current_censor.pid
+                          }}
+                          config={{
+                            name: this.state.name,
+                            cmd: this.props.censors.config.cmd,
+                            dir: this.props.censors.config.dir,
+                            bin: this.props.censors.config.bin,
+                            script: this.props.censors.config.script
+                          }}
+                          current_process={current_censor}
+                          dispatch={this.props.dispatch}
+                          current_agent={this.props.cores.agents[this.props.censors.censor_task.id_agent_censor]}
+                        />
                       </li>
                     </ul>
                   </Col>
                 </Row>
               </div>
             </div>
-
 					</Col>
           <Col sm={5}>
             <ListAgents service={{

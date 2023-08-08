@@ -8,8 +8,9 @@ import {SecondsToDhms} from '../utilities/utility'
 import FormSchedulerRefresh from '../forms/form-scheduler-refresh';
 import { checkPercentWarning, checkTrafficWarning } from '../utilities/check-warning';
 import ListAgents from '../forms/agents/form-list-agents';
+import ControlProcess from '../../../components/control'
 
-const ROOT_URL = 'http://192.168.14.165:8000';
+// const ROOT_URL = 'http://192.168.14.165:8000';
 const PORT = 8000
 
 class Cgate extends Component {
@@ -42,10 +43,9 @@ class Cgate extends Component {
           if (!this.props.cgates.cgate_task.check_task) {
             if (this.props.cgates.cgate_task.timer == 0 ) {
               let refresh_cgate = setInterval(async () => {
-              // console.log("task running .... ")
-              const res = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
-              // console.log("res ", res)
-              this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
+                var current_agent = this.props.cores.agents[this.props.cgates.cgate_task.id_agent_cgate]
+                await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${current_agent.ip}:${PORT}`});
+                this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
               }, this.props.cgates.cgate_task.interval)
 
               this.setState({
@@ -152,9 +152,23 @@ class Cgate extends Component {
                       <li className="ng-binding"> {current_cgate.status > 0 ? "Running" : "Stopped"} </li>
                       <li className="ng-binding"> {current_cgate && current_cgate.start_time ? current_cgate.start_time : "-"} </li>
                       <li className="ng-binding">                     
-                        <Col sm={4}> <a onClick={this.turnOffService.bind(this)}><i className="zmdi zmdi-power"></i></a></Col>
-                        <Col sm={4}> <a onClick={this.resetService.bind(this)}><i className="zmdi zmdi-refresh"></i></a></Col>
-                        <Col sm={4}> <a onClick={this.configService.bind(this)}><i className="zmdi zmdi-wrench"></i></a></Col> 
+                        <ControlProcess 
+                          service={{
+                            name: this.state.name,
+                            status: current_cgate.status,
+                            pid: current_cgate.pid
+                          }}
+                          config={{
+                            name: this.state.name,
+                            cmd: this.props.cgates.config.cmd,
+                            dir: this.props.cgates.config.dir,
+                            bin: this.props.cgates.config.bin,
+                            script: this.props.cgates.config.script
+                          }}
+                          current_process={current_cgate}
+                          dispatch={this.props.dispatch}
+                          current_agent={this.props.cores.agents[this.props.cgates.cgate_task.id_agent_cgate]}
+                        />                      
                       </li>
                     </ul>
                   </Col>

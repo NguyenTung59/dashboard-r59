@@ -144,3 +144,54 @@ export async function GetProcessExporters(dispatch, payload) {
 		console.log(error);
 	}
 }
+
+export async function StartProcessCore(dispatch, payload) {
+	const requestOptions = {
+		method: 'POST',
+		headers: { 
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`,
+			'C-Api-Key': `QmVhcmVyIGJtTnpYMk52Y21WZk1qQXlNdz09` 
+		},
+		body: JSON.stringify(payload.body),
+	};
+
+	try {
+		let response = await fetch(`${payload.url}/api/agent/start/process/core`, requestOptions);
+		// console.log("response ", response)
+		if (response) {
+			if (response.status > 200) {return}
+			let data = await response.json();
+			return data
+		}
+
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export async function StopProcessCore(dispatch, payload) {
+	// console.log(payload.body)
+	const requestOptions = {
+		method: 'POST',
+		headers: { 
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`,
+			'C-Api-Key': `QmVhcmVyIGJtTnpYMk52Y21WZk1qQXlNdz09` 
+		},
+		body: JSON.stringify(payload.body),
+	};
+
+	try {
+		let response = await fetch(`${payload.url}/api/agent/stop/process/core`, requestOptions);
+		if (response) {
+			if (response.status > 200) {return}
+
+			let data = await response.json();
+			return data
+		}
+
+	} catch (error) {
+		console.log(error);
+	}
+}

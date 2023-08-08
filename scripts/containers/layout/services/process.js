@@ -17,7 +17,7 @@ class Process extends Component {
 		super(props);
     this.state = {
       name: this.props.cores.process_name,
-      service: this.props.history.location.pathname.split("/")[2].toUpperCase(),
+      service: this.props.history.location.pathname.split("/")[2],
       system: this.props.cores.system,
       current_agent: this.props.cores.agents[this.props.cores.process_task.id_agent_process],
       init_refresh: null,
@@ -26,7 +26,7 @@ class Process extends Component {
       scheduler_task: [],
 		}
     this.onChangeSearch = this.onChangeSearch.bind(this)
-    this.onClickSearch = this.onClickSearch.bind(this)
+    this.onSearch = this.onSearch.bind(this)
   }
 
   async componentDidMount() {
@@ -45,8 +45,9 @@ class Process extends Component {
           if (!this.props.cores.process_task.check_task) {
             if (this.props.cores.process_task.timer == 0 ) {
               let refresh_process = setInterval(async () => {
-              const res = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
-              this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
+                var current_agent = this.props.cores.agents[this.props.cores.process_task.id_agent_process]
+                await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${current_agent.ip}:${PORT}`});
+                this.props.dispatch({type: `SET_${this.state.service.toUpperCase()}_CHECK_TASK`, payload: {check_task: true}})
               }, this.props.cores.process_task.interval)
 
               this.setState({
@@ -67,7 +68,7 @@ class Process extends Component {
             })
             this.setState({scheduler_task: []})
           }
-          this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
+          this.props.dispatch({type: `SET_${this.state.service.toUpperCase()}_CHECK_TASK`, payload: {check_task: false}})
         }
 
       }, 1000);
@@ -109,13 +110,10 @@ class Process extends Component {
     })
   }
 
-  async onClickSearch() {
-    // console.log("129 ", this.state.name)
-    // console.log(this.state.name, this.state.current_agent)
+  async onSearch() {
+    this.props.dispatch({ type: 'SET_PROCESS_NAME', payload: {name: this.state.name} });
+    const result = await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
 
-    this.props.dispatch({ type: 'GET_CURRENT_NAME', payload: {name: this.state.name} });
-    const result = await GetProcessCore(this.props.dispatch, {name: this.props.cores.process_name, url: `http://${this.state.current_agent.ip}:${PORT}`});
-    // console.log("result ", result)
     this.setState({
       result: [...result]
     })
@@ -137,7 +135,7 @@ class Process extends Component {
     const {cores} = this.props
     const {system} = this.state
     const current_process = cores.current_process
-    
+    // console.log(this.props)
     return (
       <Fragment>
 				<HeaderModule text="Processes"/>
@@ -199,6 +197,7 @@ class Process extends Component {
             <ListAgents 
               service={{
                 name: this.state.service,
+                process_name: this.state.name,
                 id_agent: this.props.cores.process_task.id_agent_process,
               }}
               dispatch={this.props.dispatch}
@@ -229,7 +228,7 @@ class Process extends Component {
                 </Col>
                 <Col sm={4} className="search-process">
                   <input type="search" placeholder="Search..." name="name" onChange={this.onChangeSearch}/>
-                  <button className="btn btn-search" tabIndex="0" onClick={this.onClickSearch}>
+                  <button className="btn btn-search" tabIndex="0" onClick={this.onSearch}>
                     <i className="zmdi zmdi-search" tabIndex="0"></i>
                   </button>
                 </Col>
@@ -237,7 +236,7 @@ class Process extends Component {
               </div>
               <div className="card-body card-padding">
                 <div style={{maxHeight: "100px", overflow: "auto"}}>
-                {this.state.result.length > 0 ? this.state.result.sort((a, b) => a.command - b.command).map((e, i) => (
+                {this.props.cores.process.length > 0 ? this.props.cores.process.sort((a, b) => a.command - b.command).map((e, i) => (
                     <div key={i} onClick={this.onSwitchProcess.bind(this, e.pid)}>
                         <ul className="list-unstyled module-action">
                           <li>

@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Row, Col} from 'react-bootstrap'
-import { connect } from 'react-redux';
+// import { connect } from 'react-redux';
 import { GetProcessCore } from '../../../../actions/core-action';
 
 const PORT = 8000
@@ -10,7 +10,8 @@ export default class ListAgents extends Component {
     super(props),
     this.state = {
       name: this.props.service.name,
-      current_agent: this.props.cores.agents[this.props.id_agent],
+      process_name: this.props.service.process_name,
+      current_agent: this.props.cores.agents[this.props.service.id_agent],
     }
     // this.onSwitchAgent = this.onSwitchAgent.bind(this)
   }
@@ -24,6 +25,7 @@ export default class ListAgents extends Component {
   // }
 
   onSwitchAgent(hostname){
+    // console.log(hostname)
     this.props.cores.agents.map(async (a, i) => {
       if (a.name == hostname) {
         this.setState({
@@ -36,6 +38,11 @@ export default class ListAgents extends Component {
           if (list_exporters.length > 0) {
             this.props.dispatch({ type: 'GET_CURRENT_EXPORTER', payload: list_exporters[0] });
           }
+        } else if (this.state.name == "process"){
+          // console.log("name ", this.state.process_name)
+          const list = await GetProcessCore(this.props.dispatch, {name: this.state.process_name, url: `http://${a.ip}:${PORT}`});
+          // console.log("list ", list)
+
         } else {
           await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${a.ip}:${PORT}`});
         }

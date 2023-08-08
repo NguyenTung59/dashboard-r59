@@ -256,7 +256,6 @@ class Home extends Component {
 		});
 
 		async function update() {
-			// console.log(plot)
 			plot.setData(await getDataMetrics());
 			plot.setupGrid();
 			plot.draw();

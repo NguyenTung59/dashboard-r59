@@ -33,8 +33,9 @@
         z-index: 99999 !important;
         margin: 0;
         height: 100% !important;
-        width: 100% !important;                
-        left: 0 !important;
+        width: 33.33% !important;                
+        // left: 0 !important;
+        right: 0 !important;
         top: 0 !important;
         -webkit-transition: transform 0.4s ease-out, -webkit-transform 0.4s ease-out !important;
            -moz-transition: transform 0.4s ease-out, -webkit-transform 0.4s ease-out !important;
@@ -88,6 +89,11 @@
                     font-size: 24px;
                     cursor: pointer;
                     margin-left: -7px;
+                }
+                i.zmdi-arrow-right{
+                    font-size: 24px;
+                    cursor: pointer;
+                    margin-right: -7px;
                 }
             }
         }

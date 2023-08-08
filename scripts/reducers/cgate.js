@@ -26,12 +26,26 @@ export const initialCgateState = {
       log_disk_usage:"",
       traffic_volume:"0 Mb/s",
       start_time:"May23",
-      runtime: 4493170
+      runtime: 4493170,
+      command: "/opt/cerberus/cgate/cgate"
+    },
+    config: {
+      name: "cgate",
+      // type: "services",
+      cmd: "/opt/cerberus/cgate/cgate",
+      dir: "opt/cerberus/cgate",
+      bin: "",
+      script: "start.sh"
     }
 };
 
 export default function CgateReducer(state = initialCgateState, action){
 	switch (action.type) {
+    case 'SET_CONFIG_CGATE':
+      return {
+        ...state,
+        config: action.payload.config
+      };
 		case 'GET_CGATE':
 			return {
 				...state,

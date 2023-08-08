@@ -42,7 +42,8 @@ class Manager extends Component {
         if (this.props.cores.exporter_task.enabled) {
           if (!this.props.cores.exporter_task.check_task) {
             if (this.props.cores.exporter_task.timer == 0 ) {
-              await GetProcessExporters(this.props.dispatch, {url: `http://${this.state.current_agent.ip}:${PORT}`})
+              var current_agent = this.props.cores.agents[this.props.cores.exporter_task.id_agent_exporter]
+              await GetProcessExporters(this.props.dispatch, {url: `http://${current_agent.ip}:${PORT}`})
               this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
             }
           }``
