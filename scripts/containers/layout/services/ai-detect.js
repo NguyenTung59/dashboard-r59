@@ -201,8 +201,11 @@ class AIDectect extends Component {
               }}/>
           </Col>
 				</Row>
+        {/* Performance */}
+        <div className="module-head"> 
+          <h2>Performance</h2>
+        </div>
         <Row>
-          <h3>Performance</h3>
           <Col sm={3}>
             <div className="card">
               <div className={checkPercentWarning(current_da.cpu_usage)}>

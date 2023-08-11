@@ -156,9 +156,9 @@ export default class UIModals extends Component {
 									<div className="modal-header p-0">
 										<div className="modal-header-bar">
 											<Ripple type="button" className="navbar-toggle" onClick={() => { this.closeCustom("default", this.state.custom.entrance) }}>
-												<i className="zmdi zmdi-arrow-left zmdi-hc-fw"></i>
+												<i className="zmdi zmdi-arrow-right zmdi-hc-fw"></i>
 											</Ripple>
-											<div className="header-title-bar">Custome Regular modal</div>
+											<div className="header-title-bar">Custom Regular modal</div>
 										</div>
 									</div>
 									<div className="card">
@@ -172,7 +172,7 @@ export default class UIModals extends Component {
 									<div className="modal-header p-0">
 										<div className="modal-header-bar">
 											<Ripple type="button" className="navbar-toggle" onClick={() => { this.closeCustom("txt", this.state.custom.entrance) }}>
-												<i className="zmdi zmdi-arrow-left zmdi-hc-fw"></i>
+												<i className="zmdi zmdi-arrow-right zmdi-hc-fw"></i>
 											</Ripple>
 											<div className="header-title-bar">Custome Regular modal</div>
 										</div>
@@ -192,7 +192,7 @@ export default class UIModals extends Component {
 									<div className="modal-header p-0">
 										<div className="modal-header-bar">
 											<Ripple type="button" className="navbar-toggle" onClick={() => { this.closeCustom("input", this.state.custom.entrance) }}>
-												<i className="zmdi zmdi-arrow-left zmdi-hc-fw"></i>
+												<i className="zmdi zmdi-arrow-right zmdi-hc-fw"></i>
 											</Ripple>
 											<div className="header-title-bar">Modal with input</div>
 										</div>
@@ -222,7 +222,7 @@ export default class UIModals extends Component {
 									<div className="modal-header p-0">
 										<div className="modal-header-bar">
 											<Ripple type="button" className="navbar-toggle" onClick={() => { this.closeCustom("scroll", this.state.custom.entrance) }}>
-												<i className="zmdi zmdi-arrow-left zmdi-hc-fw"></i>
+												<i className="zmdi zmdi-arrow-right zmdi-hc-fw"></i>
 											</Ripple>
 											<div className="header-title-bar">Modal with scroller</div>
 										</div>

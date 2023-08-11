@@ -251,7 +251,7 @@ export default class ControlProcess extends Component {
           <Col sm={4}> 
             {
               this.props.service.status > 0 
-              ? <a onClick={() => { this.simpleAlert("confirm off", this.props.service.pid) }} style={{color: 'cyan'}}><i className="zmdi zmdi-power"></i></a> 
+              ? <a onClick={() => { this.simpleAlert("confirm off", this.props.service.pid) }}><i className="zmdi zmdi-power"></i></a> 
               : <a onClick={() => { this.simpleAlert("confirm on")}} style={{color: 'red'}}><i className="zmdi zmdi-power"></i></a>
             }
           </Col>

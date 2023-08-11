@@ -1,7 +1,8 @@
 import React, {Component} from "react";
 import {Row, Col} from 'react-bootstrap'
 // import { connect } from 'react-redux';
-import { GetProcessCore } from '../../../../actions/core-action';
+import { GetProcessCore, GetProcessExporters, GetSystemInfo } from '../../../../actions/core-action';
+import AddAgent from './form-add-agent'
 
 const PORT = 8000
 
@@ -25,7 +26,6 @@ export default class ListAgents extends Component {
   // }
 
   onSwitchAgent(hostname){
-    // console.log(hostname)
     this.props.cores.agents.map(async (a, i) => {
       if (a.name == hostname) {
         this.setState({
@@ -39,10 +39,7 @@ export default class ListAgents extends Component {
             this.props.dispatch({ type: 'GET_CURRENT_EXPORTER', payload: list_exporters[0] });
           }
         } else if (this.state.name == "process"){
-          // console.log("name ", this.state.process_name)
-          const list = await GetProcessCore(this.props.dispatch, {name: this.state.process_name, url: `http://${a.ip}:${PORT}`});
-          // console.log("list ", list)
-
+          await GetProcessCore(this.props.dispatch, {name: this.state.process_name, url: `http://${a.ip}:${PORT}`});
         } else {
           await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${a.ip}:${PORT}`});
         }
@@ -56,9 +53,19 @@ export default class ListAgents extends Component {
     return (
       <div className="card">
         <div className="card-header ch-alt">
-          <h2>
-            List Agent
-          </h2>
+          <Row>
+            <Col sm={6}>
+              <h2>
+                List Agent
+              </h2>
+            </Col>
+            <Col sm={6}>
+              <div className="pull-right">
+                <AddAgent/>
+              </div>
+            </Col>
+          </Row>
+         
         </div>
         <div className="card-body card-padding">
           <Row className="pmo-contact">

@@ -421,7 +421,7 @@ export default class FormComponent extends Component {
 								<p className="c-black">Inline Examples</p>
 								<small>Displaying the Datepicker by default</small>
 								<br /><br />
-								<Row>
+								{/* <Row>
 									<Col sm={12} md={4}>
 										<div className="dp-green">
 											<DatePicker todayButton={"Today"} inline showMonthDropdown showYearDropdown dropdownMode="select" selected={this.state.start_date_green} name="start_date_green" onChange={this.handleChange_green} />
@@ -437,12 +437,12 @@ export default class FormComponent extends Component {
 											<DatePicker todayButton={"Today"} inline showMonthDropdown showYearDropdown dropdownMode="select"  selected={this.state.start_date_red} name="start_date_red" onChange={this.handleChange_red} />
 										</div>
 									</Col>
-								</Row>
+								</Row> */}
 								<br/>
 								<p className="c-black">Multiple Popup Examples</p>
 								<small>Displaying on focus</small>
 
-								<Row>
+								{/* <Row>
 									<Col sm={12} md={4}>
 										<div className="picker-input">
 											<DatePicker popperClassName="dp-green" todayButton={"Today"} showMonthDropdown showYearDropdown customInput={<InputDate />} name="start_date_input_a" selected={this.state.start_date_input_a} onChange={this.handleChange} />
@@ -458,7 +458,7 @@ export default class FormComponent extends Component {
 											<DatePicker popperClassName="dp-red" todayButton={"Today"} showMonthDropdown showYearDropdown customInput={<InputDate />} name="start_date_input_a" selected={this.state.start_date_input_a} onChange={this.handleChange} />
 										</div>
 									</Col>
-								</Row>
+								</Row> */}
 							</div>
 						</div>
 					</Col>
