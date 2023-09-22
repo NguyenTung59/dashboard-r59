@@ -93,6 +93,34 @@ const routes = {
 			}),
 			exact: true
 		}, {
+			path: "/alerts/detail",
+			component: Loadable({
+				loader: () => import("./containers/layout/alerts/detail"),
+				loading: Loading
+			}),
+			exact: true
+		}, {
+			path: "/alerts/data-alerts",
+			component: Loadable({
+				loader: () => import("./containers/layout/alerts/data-alerts"),
+				loading: Loading
+			}),
+			exact: true
+		},{
+			path: "/systems/third-party",
+			component: Loadable({
+				loader: () => import('./containers/layout/third\-party/index'),
+				loading: Loading
+			}),
+			exact: true
+		}, {
+			path: "/systems/third-party/siem",
+			component: Loadable({
+				loader: () => import('./containers/layout/third\-party/siem/index'),
+				loading: Loading
+			}),
+			exact: true
+		}, {
 			path: "/typography",
 			component: Loadable({
 				loader: () => import("./containers/layout/typography/typography"),

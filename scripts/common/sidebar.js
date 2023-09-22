@@ -24,6 +24,8 @@ class SideBar extends Component {
 			location: extract_path[1],
 			profile: false,
 			services: extract_path[1] == "services" ? true : false,
+			alerts: extract_path[1] == "alerts" ? true : false,
+			systems: extract_path[1] == "systems" ? true : false,
 			tables: extract_path[1] == "tables" ? true : false,
 			widgets: extract_path[1] == "widgets" ? true : false,
 			forms: extract_path[1] == "forms" ? true : false,
@@ -73,7 +75,6 @@ class SideBar extends Component {
 				})
 			}
 		})
-		
 	}
 	setScrollerRef(ref) {}
 
@@ -154,6 +155,39 @@ class SideBar extends Component {
 										</li>
 										<li>
 											<NavLink className="sub" to={`/services/exporter`} >Exporters</NavLink>
+										</li>
+									</ul>
+								</Collapse>
+							</li>
+							{/* Alerts */}
+							<li className={`${this.state.alerts ? "toggled" : ""} sub-menu`}>
+								<a className={`${this.state.alerts && this.state.location == "alerts" ? "active" : ""} `} onClick={(e) => { this.toggleSubmenu(e) }} name="alerts">
+									<div className="icon-circle">
+										<i className="zmdi zmdi-dialpad"></i>
+									</div><span>Alerts</span>
+								</a>
+								<Collapse in={ this.state.alerts }>
+									<ul className="list-unstyled">
+										{/* <li>
+											<NavLink className="sub" to={`/alerts/detail`}>Detail</NavLink>
+										</li> */}
+										<li>
+											<NavLink className="sub" to={`/alerts/data-alerts`} activeClassName="active">Data Alerts</NavLink>
+										</li>
+									</ul>
+								</Collapse>
+							</li>
+							{/* Systems */}
+							<li className={`${this.state.systems ? "toggled" : ""} sub-menu`}>
+								<a className={`${this.state.systems && this.state.location == "systems" ? "active" : ""} `} onClick={(e) => { this.toggleSubmenu(e) }} name="systems">
+									<div className="icon-circle">
+										<i className="zmdi zmdi-devices"></i>
+									</div><span>Systems</span>
+								</a>
+								<Collapse in={ this.state.systems }>
+									<ul className="list-unstyled">
+										<li>
+											<NavLink className="sub" to={`/systems/third-party`} activeClassName="active">Third Parties</NavLink>
 										</li>
 									</ul>
 								</Collapse>

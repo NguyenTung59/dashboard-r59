@@ -32,9 +32,12 @@ export const initialAIState = {
     command: ""
   },
   config: {
+    agent_ip: "192.168.14.151",
+    hostname: "ubuntusrv",
     name: "ai-detect",
     // type: "services",
     cmd: "",
+    cmd_stop: "",
     dir: "",
     bin: "",
     script: "start.sh"

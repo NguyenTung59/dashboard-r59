@@ -97,7 +97,7 @@ class Applayout extends Component {
 						<Router history={history}>
 							<div className="App">
 								<Header history={history}/>
-								<SideBar state={this.state.state_location} history={history}/>
+								<SideBar state={this.state.state_location}/>
 								<main className="container">
 									<Switch>
 										{routes.logged.map((route, index) => (

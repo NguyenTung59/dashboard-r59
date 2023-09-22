@@ -7,6 +7,7 @@ import CensorReducer from './censor';
 import CgateReducer from './cgate';
 import AIReducer from './ai-detect';
 import MetricsReducer from './metrics';
+import AlertReducer from './alert';
 
 /*
  * We combine all reducers into a single object before updated data is dispatched (sent) to store
@@ -21,6 +22,7 @@ const allReducers = combineReducers({
 	censors: CensorReducer,
 	cgates: CgateReducer,
 	metrics: MetricsReducer,
+	alerts: AlertReducer,
 	ai: AIReducer,
 });
 

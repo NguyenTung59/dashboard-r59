@@ -3,6 +3,9 @@ import { data } from "jquery";
 let user = localStorage.getItem('currentUser')
 	? JSON.parse(localStorage.getItem('currentUser')).user
 	: '';
+let role = localStorage.getItem('currentUser')
+	? JSON.parse(localStorage.getItem('currentUser')).role
+	: '';
 let token = localStorage.getItem('currentUser')
 	? JSON.parse(localStorage.getItem('currentUser')).access_token
 	: '';
@@ -10,6 +13,7 @@ let token = localStorage.getItem('currentUser')
 
 export const initialState = {
 	user: '' || user,
+	role: '' || role,
 	token: '' || token,
 	loading: false,
 	errorMessage: null,
@@ -28,6 +32,7 @@ export default function AuthReducer(state = initialState, action){
 			return {
 				...state,
 				user: action.payload.user,
+				role: action.payload.role,
 				token: action.payload.access_token,
 				loading: false,
 				isAuth: true
@@ -37,6 +42,7 @@ export default function AuthReducer(state = initialState, action){
 				...state,
 				user: '',
 				token: '',
+				role: '',
 				isAuth: false
 			};
 

@@ -153,24 +153,24 @@ class Manager extends Component {
                   <Col sm={4}>
                     <ul>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-laptop"></i> CPU </li>
+                        <i className="zmdi zmdi-laptop"></i> <b>CPU</b> </li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-card-sd"></i> RAM </li>
+                        <i className="zmdi zmdi-card-sd"></i> <b>RAM</b> </li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-dns"></i> Disk </li>
+                        <i className="zmdi zmdi-dns"></i> <b>Disk</b> </li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-devices"></i> UUID </li>
+                        <i className="zmdi zmdi-devices"></i> <b>UUID</b> </li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-desktop-mac"></i> Host Name </li>
+                        <i className="zmdi zmdi-desktop-mac"></i> <b>Host Name</b> </li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-desktop-mac"></i> CMD </li>  
+                        <i className="zmdi zmdi-desktop-mac"></i> <b>CMD</b> </li>  
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-desktop-mac"></i> Port </li>
+                        <i className="zmdi zmdi-desktop-mac"></i> <b>Port</b> </li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-desktop-mac"></i> Path </li>  
-                      <li className="ng-binding">{current_exporter && current_exporter.status == "running" ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-time"></i> Start time </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(0)}</li>
+                        <i className="zmdi zmdi-desktop-mac"></i> <b>Path</b> </li>
+                      <li className="ng-binding">{current_exporter && current_exporter.status == "running" ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} <b>Status </b></li>
+                      <li className="ng-binding"><i className="zmdi zmdi-time"></i><b> Start time </b></li>
+                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i><b> Runtime:</b> {SecondsToDhms(0)}</li>
                     </ul>
                   </Col>
                   <Col sm={8}>
@@ -229,7 +229,7 @@ class Manager extends Component {
                 </h2>
               </div>
               <div className="card-body card-padding">
-                <div style={{maxHeight: "100px", overflow: "auto"}}>
+                <div className='scroll-list-custom' style={{maxHeight: "100px", overflow: "auto"}}>
                 {cores.exporters.length > 0 ? cores.exporters.sort((a, b) => a.name - b.name).map((e, i) => (
                     <div key={i} onClick={this.onSwitchExporter.bind(this, e.pid)}>
                         <ul className="list-unstyled module-action">

@@ -5,7 +5,7 @@ import { GetAgents, GetProcessCore, GetSystemInfo } from '../../../actions/core-
 import {SecondsToDhms} from '../utilities/utility'
 import { checkPercentWarning, checkTrafficWarning } from '../utilities/check-warning';
 // import HeaderSearch from '../../../components/header-search-bar';
-import HeaderModule from '../../../common/module-header'
+import HeaderModule from '../../../common/module-header';
 import FormSchedulerRefresh from '../forms/form-scheduler-refresh';
 import ListAgents from '../forms/agents/form-list-agents';
 
@@ -152,22 +152,22 @@ class Process extends Component {
                   <Col sm={4}>
                     <ul>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-laptop"></i> CPU </li>
+                        <i className="zmdi zmdi-laptop"></i> <b>CPU </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-card-sd"></i> RAM </li>
+                        <i className="zmdi zmdi-card-sd"></i> <b>RAM </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-dns"></i> Disk </li>
+                        <i className="zmdi zmdi-dns"></i> <b>Disk </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-floppy"></i> Log Disk</li>
+                        <i className="zmdi zmdi-floppy"></i> <b>Log Disk</b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-router"></i> Traffic </li>
+                        <i className="zmdi zmdi-router"></i> <b>Traffic </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-devices"></i> UUID </li>
+                        <i className="zmdi zmdi-devices"></i> <b>UUID </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-desktop-mac"></i> Host Name </li>
-                      <li className="ng-binding">{current_process.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-time"></i> Start time </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(current_process.runtime)}</li>
+                        <i className="zmdi zmdi-desktop-mac"></i><b> Host Name </b></li>
+                      <li className="ng-binding">{current_process.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} <b>Status </b></li>
+                      <li className="ng-binding"><i className="zmdi zmdi-time"></i> <b>Start time </b></li>
+                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> <b>Runtime:</b> {SecondsToDhms(current_process.runtime)}</li>
                     </ul>
                   </Col>
                   <Col sm={8}>
@@ -235,7 +235,7 @@ class Process extends Component {
                 </Row>
               </div>
               <div className="card-body card-padding">
-                <div style={{maxHeight: "100px", overflow: "auto"}}>
+                <div className='scroll-list-custom' style={{maxHeight: "100px", overflow: "auto"}}>
                 {this.props.cores.process.length > 0 ? this.props.cores.process.sort((a, b) => a.command - b.command).map((e, i) => (
                     <div key={i} onClick={this.onSwitchProcess.bind(this, e.pid)}>
                         <ul className="list-unstyled module-action">

@@ -122,22 +122,22 @@ class Cgate extends Component {
                   <Col sm={4}>
                     <ul>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-laptop"></i> CPU </li>
+                        <i className="zmdi zmdi-laptop"></i> <b>CPU </b> </li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-card-sd"></i> RAM </li>
+                        <i className="zmdi zmdi-card-sd"></i><b> RAM </b> </li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-dns"></i> Disk </li>
+                        <i className="zmdi zmdi-dns"></i> <b>Disk </b> </li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-floppy"></i> Log Disk</li>
+                        <i className="zmdi zmdi-floppy"></i> <b>Log Disk</b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-router"></i> Traffic </li>
+                        <i className="zmdi zmdi-router"></i> <b>Traffic </b> </li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-devices"></i> UUID </li>
+                        <i className="zmdi zmdi-devices"></i> <b>UUID </b> </li>
                       <li className="ng-binding">
                         <i className="zmdi zmdi-desktop-mac"></i> Host Name </li>
-                      <li className="ng-binding">{current_cgate.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-time"></i> Start time </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(current_cgate.runtime)}</li>
+                      <li className="ng-binding">{current_cgate.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} <b> Status </b></li>
+                      <li className="ng-binding"><i className="zmdi zmdi-time"></i><b> Start time </b></li>
+                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i><b> Runtime:</b> {SecondsToDhms(current_cgate.runtime)}</li>
                     </ul>
                   </Col>
                   <Col sm={8}>
@@ -159,12 +159,16 @@ class Cgate extends Component {
                             pid: current_cgate.pid
                           }}
                           config={{
+                            agent_ip: this.props.cgates.config.agent_ip,
+                            hostname: this.props.cgates.config.hostname,
                             name: this.state.name,
                             cmd: this.props.cgates.config.cmd,
+                            cmd_stop: this.props.cgates.config.cmd_stop,
                             dir: this.props.cgates.config.dir,
                             bin: this.props.cgates.config.bin,
                             script: this.props.cgates.config.script
                           }}
+                          auth={this.props.auth}
                           current_process={current_cgate}
                           dispatch={this.props.dispatch}
                           current_agent={this.props.cores.agents[this.props.cgates.cgate_task.id_agent_cgate]}
@@ -184,6 +188,7 @@ class Cgate extends Component {
                 name: this.state.name,
                 id_agent: this.props.cgates.cgate_task.id_agent_cgate,
               }}
+              auth={this.props.auth}
               dispatch={this.props.dispatch}
               cores={cores}
             />

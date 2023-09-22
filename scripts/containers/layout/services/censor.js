@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux';
 import {Row, Col} from 'react-bootstrap'
-import { GetAgents, GetProcessCore, StartProcessCore, StopProcessCore } from '../../../actions/core-action';
+import { GetAgents, GetProcessCore, GetConfigServices } from '../../../actions/core-action';
 import {SecondsToDhms} from '../utilities/utility'
 import { checkPercentWarning, checkTrafficWarning } from '../utilities/check-warning';
 import HeaderModule from '../../../common/module-header'
@@ -36,17 +36,17 @@ class Censor extends Component {
       // })}
 
       await GetAgents(this.props.dispatch)
+      await GetConfigServices(this.props.dispatch, {ip: this.state.current_agent.ip, name: this.state.name, url: `http://192.168.14.165:${PORT}`})
       await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${this.state.current_agent.ip}:${PORT}`});
       let refresh_init = setInterval(async () => {
         if (this.props.censors.censor_task.enabled) {
           if (!this.props.censors.censor_task.check_task) {
             if (this.props.censors.censor_task.timer == 0 ) {
               let refresh_censor = setInterval(async () => {
-              var current_agent = this.props.cores.agents[this.props.censors.censor_task.id_agent_censor]
-              await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${current_agent.ip}:${PORT}`});
-              this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
+                var current_agent = this.props.cores.agents[this.props.censors.censor_task.id_agent_censor]
+                this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: true}})
+                await GetProcessCore(this.props.dispatch, {name: this.state.name, url: `http://${current_agent.ip}:${PORT}`});
               }, this.props.censors.censor_task.interval)
-
               this.setState({
                 scheduler_task: [
                   ...this.state.scheduler_task,
@@ -75,7 +75,7 @@ class Censor extends Component {
       })
 
     } catch(e) {
-      console.log(e);
+      console.log("78 censor", e);
     }
   }
 
@@ -92,7 +92,9 @@ class Censor extends Component {
   render() {
     const {cores, censors} = this.props
     const current_censor = censors.censor
-    
+    // console.log(this.props.censors.censor_task.enabled)
+    // console.log(this.props.censors.config)
+
     return (
       <Fragment>
 				<HeaderModule text="Censor"/>
@@ -109,24 +111,24 @@ class Censor extends Component {
                   <Col sm={4}>
                     <ul>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-laptop"></i> CPU </li>
+                        <i className="zmdi zmdi-laptop"></i> <b>CPU </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-card-sd"></i> RAM </li>
+                        <i className="zmdi zmdi-card-sd"></i> <b>RAM </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-dns"></i> Disk </li>
+                        <i className="zmdi zmdi-dns"></i> <b>Disk </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-floppy"></i> Log Disk</li>
+                        <i className="zmdi zmdi-floppy"></i> <b>Log Disk</b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-router"></i> Traffic </li>
+                        <i className="zmdi zmdi-router"></i> <b>Traffic </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-devices"></i> UUID </li>
+                        <i className="zmdi zmdi-devices"></i> <b>UUID </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-desktop-mac"></i> Host Name </li>
+                        <i className="zmdi zmdi-desktop-mac"></i> <b>Host Name </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-assignment"></i> Rule Version </li>
-                      <li className="ng-binding">{current_censor.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-time"></i> Start time </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(current_censor.runtime)}</li>
+                        <i className="zmdi zmdi-assignment"></i>  <b>Rule Version </b></li>
+                      <li className="ng-binding">{current_censor.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>}<b> Status</b> </li>
+                      <li className="ng-binding"><i className="zmdi zmdi-time"></i><b> Start time </b></li>
+                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i><b> Runtime:</b> {SecondsToDhms(current_censor.runtime)}</li>
                     </ul>
                   </Col>
                   <Col sm={8}>
@@ -149,15 +151,19 @@ class Censor extends Component {
                           service={{
                             name: this.state.name,
                             status: current_censor.status,
-                            pid: current_censor.pid
+                            pid: current_censor.pid,
                           }}
                           config={{
+                            agent_ip: this.props.censors.config.agent_ip,
+                            hostname: this.props.censors.config.hostname,
                             name: this.state.name,
                             cmd: this.props.censors.config.cmd,
+                            cmd_stop: this.props.censors.config.cmd_stop,
                             dir: this.props.censors.config.dir,
                             bin: this.props.censors.config.bin,
                             script: this.props.censors.config.script
                           }}
+                          auth={this.props.auth}
                           current_process={current_censor}
                           dispatch={this.props.dispatch}
                           current_agent={this.props.cores.agents[this.props.censors.censor_task.id_agent_censor]}
@@ -170,12 +176,15 @@ class Censor extends Component {
             </div>
 					</Col>
           <Col sm={5}>
-            <ListAgents service={{
-              name: this.state.name,
-              id_agent: this.props.censors.censor_task.id_agent_censor,
-            }}
-            dispatch={this.props.dispatch}
-            cores={cores}
+            <ListAgents 
+              service={{
+                name: this.state.name,
+                id_agent: this.props.censors.censor_task.id_agent_censor,
+              }}
+              // scheduler_task={this.state.scheduler_task}
+              auth={this.props.auth}
+              dispatch={this.props.dispatch}
+              cores={cores}
             />
             {/* scheduler  */}
             <FormSchedulerRefresh 

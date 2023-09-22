@@ -1,39 +1,48 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import {logout} from '../actions/auth-action'
 import profile from '../assets/images/profile.jpeg';
 import Switch from '../components/switch';
 import HeaderSearch from '../components/header-search-bar';
 const sidebarHelper = require('../helper/sidebar');
 const storage		=	require('../helper/storage');
-import { NavDropdown, MenuItem } from 'react-bootstrap';
+import { NavDropdown, MenuItem, Alert } from 'react-bootstrap';
+import {getNotifies, updateNotify} from '../actions/alert-action'
 
 const body = document.body
+
 class Header extends Component {
 	constructor(props){
 		super(props)
 		this.sidebarHelper 	= 	sidebarHelper.sidebarHelper;
 		this.localstorage	=	storage.storage
 		this.changeLayout 	= 	this.changeLayout.bind(this)
+		this.onCheckNotify 	= 	this.onCheckNotify.bind(this)
 		this.state = { 
 			layout: false,
 			colorSelector: false,
 			messages: [
 				{
 					title: "Rowel de Guzman",
-					message: "Sample Message for Rowel de Guzman"
+					message: "Sample Message for Rowel de Guzman",
+					status: "new",
 				}, {
 					title: "Albert Magat",
-					message: "Sample Message for Albert Magat"
+					message: "Sample Message for Albert Magat",
+					status: "new",
 				}, {
 					title: "Daryl Abalos",
-					message: "Sample Message for Daryl Abalos"
+					message: "Sample Message for Daryl Abalos",
+					status: "readed",
 				}, {
 					title: "Jonathan Poquiz",
-					message: "Sample Message for Jonathan Poquiz"
+					message: "Sample Message for Jonathan Poquiz",
+					status: "viewed",
 				}
 			],
+			alert: this.props.alerts.systems,
+			notifies: this.props.alerts.notifies,
 			result: [
 				{ content: "Content 1" },
 				{ content: "Content 2" },
@@ -63,12 +72,21 @@ class Header extends Component {
 			]
 		}
 		this._forceOpen = false
+
+		this.countNewMes = this.countNewMes.bind(this)
+		this.getStatusNotify = this.getStatusNotify.bind(this)
 	}
-	componentDidMount() {
+	async componentDidMount() {
 		this.toggleLayoutRef.setAttribute("checked", "checked")
 		let storageColor	= 	this.localstorage.get("color");
 		let currentSkin		=	storageColor == null ? "primary" : storageColor;
 		body.setAttribute("rg-skin", currentSkin)
+
+		try {
+			await getNotifies(this.props.dispatch)
+		} catch (error) {
+			console.log(erre)
+		}
 	}
 	changeLayout(ev) {
 		this.state.layout ? body.classList.add("full-layout") : body.classList.remove("full-layout")
@@ -120,7 +138,55 @@ class Header extends Component {
 		logout(this.props.dispatch);
 		this.props.history.push('/login');
 	}
+
+	countNewMes() {
+		var count = 0
+		for (let i = 0; i < this.state.messages.length; i++) {
+			if (this.state.messages[i].status == "new") {
+				count += 1
+			}
+		}
+		return count
+	}
+
+	countNewNotifies() {
+		var count = 0
+		for (let i = 0; i < this.props.alerts.notifies.length; i++) {
+			if (this.props.alerts.notifies[i].status == 0) {
+				count += 1
+			}
+		}
+		return count
+	}
+
+	getStatusNotify(status) {
+		switch (status) {
+			case 2:
+				return "fixed"
+			case 1:
+				return "checked"
+			default:
+				return "new";
+		}
+	}
+
+	async onCheckNotify(notify) {
+		var notifies = this.props.alerts.notifies
+		var notify_id 
+		for (var i=0; i < notifies.length; i++) {
+			if (notifies[i].id == notify.id) {
+				notifies[i].status = 1
+				notify_id = notify.id
+				await updateNotify(this.props.dispatch, {body: notifies[i]})
+			}
+		}
+		this.props.dispatch({ type: 'SET_NOTIFY', payload: {notifies: notifies} })
+		this.props.history.push(`/alerts/data-alerts?notify_id=${notify_id}`)
+	}
+
 	render() {
+		var count = this.countNewMes()
+		var countNewNotify = this.countNewNotifies()
 		return (
 			<header className="header">
 				<nav className="navbar navbar-default navbar-fixed-top">
@@ -161,16 +227,47 @@ class Header extends Component {
 									<span className="ss-skin bgm-indigo" onClick={(e) => { this.skinSwitch('indigo', e) }}></span>
 								</MenuItem>
 							</NavDropdown>
-							<NavDropdown eventKey={3} title={<Fragment><div className="notif-counter"><div className="counter">2</div></div><i className="zmdi zmdi-email"></i></Fragment>} noCaret className="pull-right has-zmdi messages-list" id="dropdown-email">
+							{/* alert  */}
+							<NavDropdown eventKey={3} title={<Fragment>{countNewNotify >0 ? <div className="notif-counter"><div className="counter">{countNewNotify}</div></div> : ""}<i className="zmdi zmdi-notifications"></i></Fragment>} noCaret className="pull-right has-zmdi messages-list alerts-list" id="dropdown-email">
+								<MenuItem className="dropdown-arrow"></MenuItem>
+								{this.props.alerts.notifies.sort((a, b) => {return new Date(b.created_at) - new Date(a.created_at)}).map((item, i)=>(
+									<MenuItem eventKey={"3."+i} className="item-list alert-menu-link" key={i} onClick={() => this.onCheckNotify(item)}>
+										<Alert bsStyle={item.type} className="alert-notif">
+											{item.status == 0 ? <div className="notif-new"><div className="status">{this.getStatusNotify(item.status)}</div></div> : ""}
+											<div className="media" key={i}>
+												<div className="pull-left">
+													<div className="full-round">
+														<div className="full-round-txt">
+															{item.title.substr(0, 2).toUpperCase()}
+														</div>
+													</div>
+												</div>
+												<div className="media-body">
+													<div>
+														{item.message}	
+													</div>
+													<small className="sender">
+														<span>{item.title}</span>
+														<span> {item.created_at}</span>
+													</small>
+												</div>
+											</div>
+										</Alert>
+									</MenuItem>
+								))}
+								<MenuItem divider/>
+								<MenuItem className="message-footer">More Message</MenuItem>
+							</NavDropdown>
+							<NavDropdown eventKey={3} title={<Fragment>{count > 0 ? <div className="notif-counter"><div className="counter">{count}</div></div> : ""}<i className="zmdi zmdi-email"></i></Fragment>} noCaret className="pull-right has-zmdi messages-list" id="dropdown-email">
 								<MenuItem className="dropdown-arrow"></MenuItem>
 								{this.state.messages.map((item, i)=>(
-									<MenuItem eventKey={"3."+i} className="item-list" key={i}>
+									<MenuItem eventKey={"3."+i} className="item-list" key={i} >
 										<div className="media" key={i}>
 											<div className="pull-left">
 												<div className="full-round">
 													<div className="full-round-txt">
 														{item.title.substr(0, 1).toUpperCase()}
-                                                	</div>
+                          </div>
 												</div>
 											</div>
 											<div className="media-body">
@@ -186,6 +283,7 @@ class Header extends Component {
 								<MenuItem divider/>
 								<MenuItem className="message-footer">More Message</MenuItem>
 							</NavDropdown>
+							
 							<li className="dropdown has-zmdi pull-right visible-xs" onClick={() => { this.showHideSearchMobile("show")} } >
 								<a className="icon-zmdi">
 									<i className="zmdi zmdi-search"></i>
@@ -218,7 +316,8 @@ class Header extends Component {
 function mapStateToProps(state) {
 	return {
 		users: state.users,
-		auth: state.auth
+		auth: state.auth,
+		alerts: state.alerts
 	};
 }
 export default connect(mapStateToProps)(Header);

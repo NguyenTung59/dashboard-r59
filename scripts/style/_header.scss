@@ -203,6 +203,13 @@ header{
         }
         
     }
+    .alerts-list {
+        .dropdown-menu {
+            max-height: 400px;
+            overflow: auto;
+            overflow-x: hidden;    
+        }
+    }
     .hamburger-box {
         position: relative;
         display: inline-block;

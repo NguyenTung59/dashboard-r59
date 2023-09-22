@@ -35,9 +35,12 @@ export const initialCensorState = {
       command: "/opt/cerberus/censor/censor"
     },
   config: {
+    agent_ip: "192.168.14.151",
+    hostname: "ubuntusrv",
     name: "censor",
-    cmd: "/opt/cerberus/censor/censor",
-    dir: "opt/cerberus/censor",
+    cmd: "",
+    cmd_stop: "./cmd_tools -u .censor_manager_server -c set_log_level:2 -d .",
+    dir: "/opt/cerberus/censor",
     bin: "",
     script: "start.sh"
   }

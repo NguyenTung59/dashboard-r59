@@ -30,9 +30,12 @@ export const initialCgateState = {
       command: "/opt/cerberus/cgate/cgate"
     },
     config: {
+      agent_ip: "192.168.14.151",
+      hostname: "ubuntusrv",  
       name: "cgate",
       // type: "services",
       cmd: "/opt/cerberus/cgate/cgate",
+      cmd_stop: "./cmd_tools -u .cgate_manager_server -c exit -d .",
       dir: "opt/cerberus/cgate",
       bin: "",
       script: "start.sh"

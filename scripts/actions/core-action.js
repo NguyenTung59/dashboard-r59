@@ -90,6 +90,7 @@ export async function GetProcessCore(dispatch, payload) {
 	try {
 		let response = await fetch(`${payload.url}/api/agent/process/core?name=${payload.name}`, requestOptions);
 		let result = await response.json();
+		if (result.code > 200) return 
     switch (payload.name) {
       case 'censor':
         if (result.data) {
@@ -145,6 +146,56 @@ export async function GetProcessExporters(dispatch, payload) {
 	}
 }
 
+export async function RegisterNewAgent(payload) {
+	const requestOptions = {
+		method: 'POST',
+		headers: { 
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`,
+			'C-Api-Key': `QmVhcmVyIGJtTnpYMk52Y21WZk1qQXlNdz09` 
+		},
+		body: JSON.stringify(payload.body),
+	};
+
+	try {
+		let response = await fetch(`${payload.url}/api/agent/register`, requestOptions);
+		// console.log("response ", response)
+		if (response) {
+			if (response.status > 200) {return}
+			let data = await response.json();
+			return data
+		}
+
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export async function DeRegisterAgent(payload) {
+	const requestOptions = {
+		method: 'POST',
+		headers: { 
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`,
+			'C-Api-Key': `QmVhcmVyIGJtTnpYMk52Y21WZk1qQXlNdz09` 
+		},
+		body: JSON.stringify(payload.body),
+	};
+
+	try {
+		let response = await fetch(`${payload.url}/api/agent/deregister`, requestOptions);
+		// console.log("response ", response)
+		if (response) {
+			if (response.status > 200) {return}
+			let data = await response.json();
+			return data
+		}
+
+	} catch (error) {
+		console.log(error);
+	}
+}
+
 export async function StartProcessCore(dispatch, payload) {
 	const requestOptions = {
 		method: 'POST',
@@ -171,7 +222,6 @@ export async function StartProcessCore(dispatch, payload) {
 }
 
 export async function StopProcessCore(dispatch, payload) {
-	// console.log(payload.body)
 	const requestOptions = {
 		method: 'POST',
 		headers: { 
@@ -193,5 +243,57 @@ export async function StopProcessCore(dispatch, payload) {
 
 	} catch (error) {
 		console.log(error);
+	}
+}
+
+export async function SetConfigService(dispatch, payload) {
+	const requestOptions = {
+		method: 'POST',
+		headers: { 
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`,
+			'C-Api-Key': `QmVhcmVyIGJtTnpYMk52Y21WZk1qQXlNdz09` 
+		},
+		body: JSON.stringify(payload.body),
+	};
+
+	try {
+		let response = await fetch(`${payload.url}/api/agent/service/set-config`, requestOptions);
+		if (response) {
+			if (response.status > 200) {return}
+
+			let result = await response.json();
+			dispatch({ type: `SET_CONFIG_${payload.name.toUpperCase()}`, payload: {config: result.data} });
+			return result
+		}
+
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export async function GetConfigServices(dispatch, payload) {
+	const requestOptions = {
+		method: 'GET',
+		headers: { 
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`,
+			'C-Api-Key': `QmVhcmVyIGJtTnpYMk52Y21WZk1qQXlNdz09`
+		}
+	};
+
+	try {
+		let response = await fetch(`${payload.url}/api/agent/service/get-config?name=${payload.name}&ip=${payload.ip}`, requestOptions);
+		let result = await response.json();
+		if (result.code > 200) return 
+
+		if (result.data) {
+			dispatch({ type: `SET_CONFIG_${payload.name.toUpperCase()}`, payload: {config: result.data} });
+
+			return result.data
+		}
+
+	} catch (error) {
+		console.log("GetConfigServices error ", error);
 	}
 }

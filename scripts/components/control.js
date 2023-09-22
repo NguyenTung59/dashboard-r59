@@ -1,9 +1,10 @@
 import React , {Component} from "react"
-import { GetProcessCore, StartProcessCore, StopProcessCore } from '../actions/core-action';
+import { GetProcessCore, StartProcessCore, StopProcessCore, SetConfigService, GetConfigServices} from '../actions/core-action';
 import {Row, Col, Modal} from 'react-bootstrap'
 import { Input } from './input'
 import Ripple from './ripple';
 import swal from 'sweetalert';
+import {makeSwal} from '../containers/layout/utilities/utility'
 
 const config = require("../helper/config").config;
 const notify = require("../helper/notify").notify;
@@ -25,8 +26,11 @@ export default class ControlProcess extends Component {
 				entrance: ""
 			},
       config: {
+        agent_ip: this.props.config.ip,
+        hostname: this.props.config.hostname,
         name: this.props.config.name,
         cmd: this.props.config.cmd,
+        cmd_stop: this.props.config.cmd_stop,
         dir: this.props.config.dir,
         bin: this.props.config.bin,
         script: this.props.config.script
@@ -37,8 +41,17 @@ export default class ControlProcess extends Component {
 		this.closeCustom = this.closeCustom.bind(this);
   }
 
+  // async componentDidMount() {
+  //   try {
+  //     const config = await GetConfigServices(this.props.dispatch, {ip: this.props.current_agent.ip, name: this.state.name, url: `http://192.168.14.165:${PORT}`})
+  //     // console.log(config)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+
   async turnOffService(pid) {
-    console.log(this.props.current_process)
+    console.log(this.props.config)
     try {
       let current_agent = this.props.current_agent
       this.setState({
@@ -47,23 +60,26 @@ export default class ControlProcess extends Component {
   
       const result = await StopProcessCore(this.props.dispatch, {
         body : {
-          pid: pid
+          pid: pid,
+          dir: this.props.config.dir,
+          cmd_stop: this.props.config.cmd_stop,
         },
-        url: `http://${current_agent.ip}:${PORT}` 
+        url: `http://${current_agent.ip}:${PORT}`
       })
+      let msg = `Power off process ${this.state.name} with pid=${this.props.service.pid}`
       if (result) {
-        this.makeSwal({type: "success", msg: `Power off process ${this.state.name} with pid=${this.state.pid}`})
+        makeSwal({type: "success", msg: msg})
       } else {
-        this.makeSwal({type: "error", msg: `Power off process ${this.state.name} with pid=${this.state.pid}`})
+        makeSwal({type: "error", msg: msg})
       }
       await GetProcessCore(this.props.dispatch, {name: this.props.service.name, url: `http://${current_agent.ip}:${PORT}`});
     } catch (error) {
-      this.makeSwal({type: "error", msg: error})
+      makeSwal({type: "error", msg: error})
     }
   }
 
   async turnOnService() {
-    console.log(this.props.current_process)
+    // console.log(this.props.current_process)
     try {
       let current_agent = this.props.current_agent
       this.setState({
@@ -72,87 +88,35 @@ export default class ControlProcess extends Component {
   
       const result = await StartProcessCore(this.props.dispatch, {
         body : {
-          name: this.state.config.name,
-          cmd: this.state.config.command,
-          dir: this.state.config.dir,
-          script: this.state.config.script,
-          bin: this.state.config.bin
+          name: this.props.config.name,
+          cmd: this.props.config.command,
+          dir: this.props.config.dir,
+          script: this.props.config.script,
+          bin: this.props.config.bin
         },
         url: `http://${current_agent.ip}:${PORT}` 
       })
+      let msg = `Power on process ${this.state.name}`
       if (result) {
-        this.makeSwal({type: "success", msg: `Power on process ${this.state.name}`})
+        makeSwal({type: "success", msg: msg})
       } else {
-        this.makeSwal({type: "error", msg: `Power on process ${this.state.name}`})
+        makeSwal({type: "error", msg: msg})
       }
       await GetProcessCore(this.props.dispatch, {name: this.props.service.name, url: `http://${current_agent.ip}:${PORT}`});
       this.setState({loading: false})
     } catch (error) {
-      this.makeSwal({type: "error", msg: error})
+      makeSwal({type: "error", msg: error})
     }
-
   }
   
   resetService() {
     console.log("reset censor ")
   }
 
-  configService() {
+  setConfigService() {
     console.log("config censor")
   }
   
-	makeSwal(action){
-		if (action.type == 'basic') {
-			swal("Here's a message!");
-		} else if (action.type == 'txt') {
-			swal("Here's a message!", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed lorem erat, tincidunt vitae ipsum et, pellentesque maximus enim. Mauris eleifend ex semper, lobortis purus sed, pharetra felis")
-		} else if (action.type == 'success') {
-			swal("Good job!", action.msg, "success")
-		} else if (action.type == 'error') {
-			swal("Failed!", action.msg, "error")
-		} else if (action.type == 'warning') {
-			swal({
-				title: "Are you sure?",
-				text: "Once deleted, you will not be able to recover this imaginary file!",
-				icon: "warning",
-				buttons: true,
-				dangerMode: true,
-			}).then((willDelete) => {
-				if (willDelete){
-					swal("Deleted!", "Your imaginary file has been deleted.", "success")
-				}
-			});
-		} else if (action.type == 'param') {
-			swal({
-				title: "Are you sure?",
-				text: "Once deleted, you will not be able to recover this imaginary file!",
-				icon: "warning",
-				buttons: true,
-				dangerMode: true,
-			}).then((willDelete) => {
-				if (willDelete) {
-					swal("Poof! Your imaginary file has been deleted!", {
-						icon: "success",
-					});
-				} else {
-					swal("Cancelled", "Your imaginary file is safe :)", "error");
-				}
-			});
-		} else if (action.type == 'img') {
-			swal({
-				title: "Sweet!",
-				text: "Here's a custom image.",
-				icon: config.asset_url +"/assets/img/thumbs-up.png"
-			});
-		} else if (action.type == 'timer') {
-			swal({
-				title: "Auto close alert!",
-				text: "I will close in 2 seconds.",
-				timer: 2000,
-				button: false
-			});
-		}
-	}
   simpleAlert(type, pid) {
 		if (type == 'alert'){
 			notify.alert("This is basic alert")
@@ -164,8 +128,11 @@ export default class ControlProcess extends Component {
           "left": "No",
           "right": "Yes",
           "fn": () => {
-            // this.turnOffService(pid)
-            this.makeSwal({type: "error", msg: `You are not have permission power off process ${this.state.name}`})
+            if (this.props.auth.role == "admin") {
+              this.turnOffService(pid)
+            } else {
+              makeSwal({type: "error", msg: `You are not have permission power off process ${this.state.name}`})
+            }
           }
         });
       } else {
@@ -182,12 +149,15 @@ export default class ControlProcess extends Component {
       let current_agent = this.props.current_agent
       if (current_agent.ip == "192.168.14.151") {
         notify.confirm({
-          "title": "Are you sure, you want to power off?",
+          "title": "Are you sure, you want to power on?",
           "left": "No",
           "right": "Yes",
           "fn": () => {
-            // this.turnOffService(pid)
-            this.makeSwal({type: "error", msg: `You are not have permission start process ${this.state.name}`})
+            if (this.props.auth.role == "admin") {
+              this.turnOnService()
+            } else {
+              makeSwal({type: "error", msg: `You are not have permission start process ${this.state.name}`})
+            }
           }
         });
       } else {
@@ -200,6 +170,24 @@ export default class ControlProcess extends Component {
           }
         });
       }
+    } else if (type == 'confirm set config') {
+      let current_agent = this.props.current_agent
+      notify.confirm({
+        "title": "Are you sure, you want to save config?",
+        "left": "No",
+        "right": "Yes",
+        "fn": () => {
+          this.setState({
+            config: {
+              ...this.state.config,
+              agent_ip: current_agent.ip,
+              hostname: current_agent.name
+            }
+          })
+          this.onSaveConfig()
+          makeSwal({type: "success", msg: `You are set config service ${this.state.name} success!`})
+        }
+      });
     } else if (type == 'toast') {
 			notify.toast("This is a toast", {
 				time: 50000,
@@ -238,20 +226,23 @@ export default class ControlProcess extends Component {
 		})
   }
 
-  onSaveConfig() {
-    console.log(this.state.config)
+  async onSaveConfig() {
+    await SetConfigService(this.props.dispatch, {body: this.state.config, name: this.state.name, url: `http://192.168.14.165:${PORT}`})
     this.props.dispatch({type: `SET_CONFIG_${this.state.name.toUpperCase()}`, payload: {config: this.state.config}})
     this.closeCustom("input", this.state.custom.entrance)
   }
 
   render() {
+
+
+
     return (
       <div>
         <Row className="notifications">        
           <Col sm={4}> 
             {
               this.props.service.status > 0 
-              ? <a onClick={() => { this.simpleAlert("confirm off", this.props.service.pid) }}><i className="zmdi zmdi-power"></i></a> 
+              ? <a onClick={() => { this.simpleAlert("confirm off", this.props.service.pid)}}><i className="zmdi zmdi-power"></i></a> 
               : <a onClick={() => { this.simpleAlert("confirm on")}} style={{color: 'red'}}><i className="zmdi zmdi-power"></i></a>
             }
           </Col>
@@ -275,25 +266,28 @@ export default class ControlProcess extends Component {
             <div className="card-body has-input">
               <div className="col-xs-12 p-t-15">
                 <div className="form-group rg-float">
-                  <Input className="form-control input-sm" float="Name" name="name" defaultValue={this.state.config.name} active={this.state.config.name? "rg-toggled" : ""} onChange={this.onChangeConfig.bind(this)}/>
+                  <Input className="form-control input-sm" float="Name" name="name" defaultValue={this.props.config.name} active={this.props.config.name? "rg-toggled" : ""} onChange={this.onChangeConfig.bind(this)}/>
                 </div>
                 <div className="form-group rg-float">
-                  <Input className="form-control input-sm" float="Command" name="cmd" defaultValue={this.state.config.cmd}  active={this.state.config.cmd? "rg-toggled" : ""} onChange={this.onChangeConfig.bind(this)}/>
+                  <Input className="form-control input-sm" float="Command" name="cmd" defaultValue={this.props.config.cmd}  active={this.props.config.cmd? "rg-toggled" : ""} onChange={this.onChangeConfig.bind(this)}/>
                 </div>
                 <div className="form-group rg-float">
-                  <Input className="form-control input-sm" float="Directory"  name="dir" defaultValue={this.state.config.dir} active={this.state.config.dir? "rg-toggled" : ""} onChange={this.onChangeConfig.bind(this)}/>
+                  <Input className="form-control input-sm" float="Command Stop" name="cmd_stop" defaultValue={this.props.config.cmd_stop}  active={this.props.config.cmd_stop? "rg-toggled" : ""} onChange={this.onChangeConfig.bind(this)}/>
                 </div>
                 <div className="form-group rg-float">
-                  <Input className="form-control input-sm" float="Name Binary File"  name="bin" defaultValue={this.state.config.bin} active={this.state.config.bin? "rg-toggled" : ""}  onChange={this.onChangeConfig.bind(this)}/>
+                  <Input className="form-control input-sm" float="Directory"  name="dir" defaultValue={this.props.config.dir} active={this.props.config.dir? "rg-toggled" : ""} onChange={this.onChangeConfig.bind(this)}/>
                 </div>
                 <div className="form-group rg-float">
-                  <Input className="form-control input-sm" float="Name Script File"  name="script" defaultValue={this.state.config.script} active={this.state.config.script? "rg-toggled" : ""} onChange={this.onChangeConfig.bind(this)}/>
+                  <Input className="form-control input-sm" float="Name Binary File"  name="bin" defaultValue={this.props.config.bin} active={this.props.config.bin? "rg-toggled" : ""}  onChange={this.onChangeConfig.bind(this)}/>
+                </div>
+                <div className="form-group rg-float">
+                  <Input className="form-control input-sm" float="Name Script File"  name="script" defaultValue={this.props.config.script} active={this.props.config.script? "rg-toggled" : ""} onChange={this.onChangeConfig.bind(this)}/>
                 </div>
               </div>
             </div>
           </div>
           <div className="modal-footer has-input">
-            <Ripple type="button" className="btn btn-primary btn-block" onClick={this.onSaveConfig.bind(this)}>Save</Ripple>
+            <Ripple type="button" className="btn btn-primary btn-block" onClick={() => this.simpleAlert("confirm set config")}>Save</Ripple>
           </div>
         </Modal>
       </div>

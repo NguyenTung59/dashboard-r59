@@ -3,6 +3,8 @@ import React, { Component, Fragment } from 'react';
 import ModuleHeade from '../../../common/module-header';
 import { Row, Col } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom'
+const notify = require("../../../helper/notify").notify;
+
 export default class Utility extends Component {
 	constructor(props) {
 		super(props);
@@ -269,7 +271,160 @@ export default class Utility extends Component {
 		)
 	}
 }
+export function makeSwal(action){
+	if (action.type == 'basic') {
+		swal("Here's a message!");
+	} else if (action.type == 'txt') {
+		swal("Here's a message!", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed lorem erat, tincidunt vitae ipsum et, pellentesque maximus enim. Mauris eleifend ex semper, lobortis purus sed, pharetra felis")
+	} else if (action.type == 'success') {
+		swal("Good job!", action.msg, "success")
+	} else if (action.type == 'error') {
+		swal("Failed!", action.msg, "error")
+	} else if (action.type == 'warning') {
+		swal({
+			title: "Are you sure?",
+			text: "Once deleted, you will not be able to recover this imaginary file!",
+			icon: "warning",
+			buttons: true,
+			dangerMode: true,
+		}).then((willDelete) => {
+			if (willDelete){
+				swal("Deleted!", "Your imaginary file has been deleted.", "success")
+			}
+		});
+	} else if (action.type == 'param') {
+		swal({
+			title: "Are you sure?",
+			text: "Once deleted, you will not be able to recover this imaginary file!",
+			icon: "warning",
+			buttons: true,
+			dangerMode: true,
+		}).then((willDelete) => {
+			if (willDelete) {
+				swal("Poof! Your imaginary file has been deleted!", {
+					icon: "success",
+				});
+			} else {
+				swal("Cancelled", "Your imaginary file is safe :)", "error");
+			}
+		});
+	} else if (action.type == 'img') {
+		swal({
+			title: "Sweet!",
+			text: "Here's a custom image.",
+			icon: config.asset_url +"/assets/img/thumbs-up.png"
+		});
+	} else if (action.type == 'timer') {
+		swal({
+			title: "Auto close alert!",
+			text: "I will close in 2 seconds.",
+			timer: 2000,
+			button: false
+		});
+	}
+}
 
+export function makeNotifV1(ev){
+	let target = ev.target,
+		attr = target.attributes,
+		type = attr["data-type"].value,
+		from = attr["data-from"].value,
+		align = attr["data-align"].value,
+		message = attr["data-message"].value;
+	
+	var notifier = notify.growl({
+		message: message,
+		url: "https://roweldev.com ",
+		title: "Sample Site ",
+		icon: 'zmdi zmdi-info zmdi-hc-fw'
+	}, {
+		z_index: 1080,
+		type: type,
+		allow_dismiss: true,
+		mouse_over: "pause",
+		label: 'Cancel',
+		className: 'btn-xs btn-inverse',
+		placement: {
+			from: from,
+			align: align
+		},
+		delay: 2500,
+		spacing: 10,
+		animate: {
+			enter: 'animated bounceIn',
+			exit: 'animated bounceOut'
+		},
+		offset: {
+			x: 20,
+			y: 85
+		},
+		onShown: function(){
+			notifier
+			.update("title", "")
+			.update("message", "This is update")
+			.update("icon", "")
+			.update("url", "");
+
+			setTimeout(function(){
+				notify.growlClose('success')
+			}, 1200);
+		}
+	});
+}
+
+export function makeNotifV2(alert){
+	// let target = ev.target,
+	// 	attr = target.attributes,
+	let type = alert && alert.type ? alert.type : "info",
+		from = alert && alert.from ? alert.from : "top",
+		align = alert && alert.align ? alert.align : "right",
+		timeout = alert && alert.timeout ? alert.timeout : 3000,
+		title = alert && alert.tittle ? alert.tittle : "Sample Site ",
+		icon = alert && alert.icon ? alert.icon : "",
+		url = alert && alert.url ? alert.url : "",
+		reminder = alert && alert.reminder ? alert.reminder : "alerts into awesome notifications",
+		message = alert && alert.message ? alert.message : "This is update";
+	
+	var notifier = notify.growl({
+		message: reminder,
+		url: "", //https://roweldev.com 
+		title: title,
+		icon: 'zmdi zmdi-info zmdi-hc-fw'
+	}, 
+	{
+		z_index: 1080,
+		type: type,
+		allow_dismiss: true,
+		mouse_over: "pause",
+		label: 'Cancel',
+		className: 'btn-xs btn-inverse',
+		placement: {
+			from: from,
+			align: align
+		},
+		delay: timeout,
+		spacing: 10,
+		animate: {
+			enter: 'animated bounceIn',
+			exit: 'animated bounceOut'
+		},
+		offset: {
+			x: 20,
+			y: 85
+		},
+		onShown: function(){
+			notifier
+			.update("title", title)
+			.update("message", message)
+			.update("icon", icon)
+			.update("url", url);
+			
+			setTimeout(function(){
+				notify.growlClose('success')
+			}, 1500);
+		}
+	});
+}
 export function SecondsToDhms(seconds) {
   seconds = Number(seconds);
 	if (seconds < 0) {

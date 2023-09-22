@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import ModuleHeader from '../../../common/module-header';
-import { connect } from 'react-redux';
-
-import { Input, Textarea, Select, AddOn, Inputmask, InputDate } from '../../../components/input'
+// import ModuleHeader from '../../../common/module-header';
 import Switch from '../../../components/switch'
-
-import { Row, Col, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
+
+import { connect } from 'react-redux';
+import { Input} from '../../../components/input'
+import { Row, Col, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { initialState } from '../../../reducers/core';
 // import { Right } from 'react-bootstrap/lib/Media';
 
@@ -42,13 +41,14 @@ class FormSchedulerRefresh extends Component {
           timer: timer
         })
       } else {
-        let after_one_hour = now.getTime() + (1000 * initialState.timer_default)
-        let future = new Date(after_one_hour)
+        let after_some_time = now.getTime() + (1000 * initialState.timer_default)
+        let reset_time = Math.round(after_some_time / 1000) - Math.round(now.getTime() / 1000)
+        let future = new Date(after_some_time)
         this.setState({
           start_date_blue: future
         })
+        this.props.dispatch({type: `SET_${this.state.service}_TIMER`, payload: {timer: reset_time}})
       }
-
     }, 1000)
 
     this.setState({
@@ -82,17 +82,17 @@ class FormSchedulerRefresh extends Component {
 	}
 
   onEnableScheduler() {
-    if (!this.state.enabled) {
+    if (!this.props.service.enabled) {
       this.setState({
-        enabled: !this.state.enabled,
+        // enabled: !this.props.service.enabled,
         check_task: false
         })
-      this.props.dispatch({type: `SET_${this.state.service}_ENABLED`, payload: {enabled: !this.state.enabled}})
+      this.props.dispatch({type: `SET_${this.state.service}_ENABLED`, payload: {enabled: !this.props.service.enabled}})
       this.props.dispatch({type: `SET_${this.state.service}_CHECK_TASK`, payload: {check_task: false}})
       this.props.dispatch({type: `SET_${this.state.service}_TIME_INTERVAL`, payload: {interval: this.state.interval}})
     } else {
       this.setState({
-        enabled: false,
+        // enabled: false,
         timer:  this.props.service.timer
       })
       this.props.dispatch({type: `SET_${this.state.service}_ENABLED`, payload: {enabled: false}})
@@ -100,6 +100,8 @@ class FormSchedulerRefresh extends Component {
   }
 
 	render() {
+
+    // console.log("scheduler... ", this.props.service.enabled)
 
     const filterPassedTime = (time) => {
       const currentDate = new Date();
@@ -122,7 +124,7 @@ class FormSchedulerRefresh extends Component {
               <Col sm={6}>
                 <Switch className="toggle-switch enable-scheduler" switcher="switch-cyan" switchColor="rgba(0,188,212,0.5)" switchActive={"#00bcd4"}>
                   <label className="ts-label scheduler-enable" htmlFor="ts-cyan">Enable</label>
-                  <input type="checkbox" id="ts-cyan" hidden="hidden" defaultChecked={this.state.enabled}/>
+                  <input type="checkbox" id="ts-cyan" hidden="hidden" defaultChecked={this.props.service.enabled}/>
                   <label className="ts-helper" htmlFor="ts-cyan" onClick={this.onEnableScheduler}></label>
                 </Switch>
               </Col>

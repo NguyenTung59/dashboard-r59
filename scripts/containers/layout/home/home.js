@@ -74,7 +74,7 @@ class Home extends Component {
 	}
 	async componentDidMount(){
 		notify.growl({
-			message: "Welcome back Rowel de Guzman",
+			message: "Welcome back Ro Admin",
 		}, {
 			z_index: 1080,
 			type: "success",

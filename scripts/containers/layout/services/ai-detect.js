@@ -123,22 +123,22 @@ class AIDectect extends Component {
                   <Col sm={4}>
                     <ul>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-laptop"></i> CPU </li>
+                        <i className="zmdi zmdi-laptop"></i> <b>CPU </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-card-sd"></i> RAM </li>
+                        <i className="zmdi zmdi-card-sd"></i> <b>RAM </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-dns"></i> Disk </li>
+                        <i className="zmdi zmdi-dns"></i> <b>Disk </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-floppy"></i> Log Disk</li>
+                        <i className="zmdi zmdi-floppy"></i> <b>Log Disk</b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-router"></i> Traffic </li>
+                        <i className="zmdi zmdi-router"></i> <b>Traffic </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-devices"></i> UUID </li>
+                        <i className="zmdi zmdi-devices"></i> <b>UUID </b></li>
                       <li className="ng-binding">
-                        <i className="zmdi zmdi-desktop-mac"></i> Host Name </li>
-                      <li className="ng-binding">{current_da.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>} Status </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-time"></i> Start time </li>
-                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> Runtime: {SecondsToDhms(current_da.runtime)}</li>
+                        <i className="zmdi zmdi-desktop-mac"></i> <b> Host Name </b></li>
+                      <li className="ng-binding">{current_da.status > 0 ? <i className="zmdi zmdi-check-circle"></i> : <i className="zmdi zmdi-close-circle"></i>}<b> Status </b></li>
+                      <li className="ng-binding"><i className="zmdi zmdi-time"></i> <b> Start time </b></li>
+                      <li className="ng-binding"><i className="zmdi zmdi-timer"></i> <b>Runtime:</b> {SecondsToDhms(current_da.runtime)}</li>
                     </ul>
                   </Col>
                   <Col sm={8}>
@@ -163,12 +163,16 @@ class AIDectect extends Component {
                             pid: current_da.pid
                           }}
                           config={{
+                            agent_ip: this.props.ais.config.agent_ip,
+                            hostname: this.props.ais.config.hostname,
                             name: this.state.name,
                             cmd: this.props.ais.config.cmd,
+                            cmd_stop: this.props.ais.config.cmd_stop,
                             dir: this.props.ais.config.dir,
                             bin: this.props.ais.config.bin,
                             script: this.props.ais.config.script
                           }}
+                          auth={this.props.auth} 
                           current_process={current_da}
                           dispatch={this.props.dispatch}
                           current_agent={this.props.cores.agents[this.props.ais.ai_task.id_agent_ai]}
@@ -187,6 +191,7 @@ class AIDectect extends Component {
                 name: this.state.name,
                 id_agent: this.props.ais.ai_task.id_agent_ai,
               }}
+              auth={this.props.auth}
               dispatch={this.props.dispatch}
               cores={cores}
             />

@@ -24,7 +24,7 @@ export async function loginUser(dispatch, loginPayload) {
 
 		if (data.status == "fail") {
 			dispatch({ type: 'LOGIN_ERROR', error: data.message });
-			console.log(data.message);
+			// console.log(data.message);
 			return;
 		}
 	} catch (error) {

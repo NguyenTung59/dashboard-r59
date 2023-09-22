@@ -59,6 +59,130 @@ hr{
     color: #FFF;
 }
 
+.scroll-list-custom::-webkit-scrollbar {
+    display: none;
+  }
+
+// alert
+.alert-notif {
+    position: relative;
+    padding: 5px 15px 0px 15px;
+    margin-bottom: 0px;
+    .media{
+        margin-top: 0px;
+    }
+    div.notif-new{
+        position: absolute;
+        background: #f44336;
+        border-radius: 50%;
+        width: 50px;
+        height: 20px;
+        right: -10px;
+        top: -5px;
+        text-align: center;
+        user-select: none;
+        
+        & > .status{
+            // margin-top: -1px;
+            // margin-right: 1px;
+            color: #FFF;
+        }
+    }
+}
+.dropdown .dropdown-menu .alert-menu-link a{
+    padding: 3px 15px!important;
+    outline: none;
+}
+
+.alert-info-detail {
+    border-right: 1px solid rgb(181, 179, 190);   
+}
+
+.alert-detail ul li {
+    padding: 4px 0 4px 15px!important;
+}
+
+.alert-detail-label {
+    padding: 0;
+}
+
+.alert-detail-value{
+    padding-left: 0px;
+}
+.ip-detail-center {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    padding: 8px 8px ;
+}
+.z-depth-src-ip {
+    border: 1px solid rgb(59, 121, 148);
+    border-radius: 5px;
+}
+
+.card .card-body ul li, .card .card-body ul li div, .ip-detail-center .ip-detail-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+ 
+.hr-toggle {
+    background: var(--dt-colors-border-neutral-default,#d5d5e1);
+    height: var(--dt-borders-width-default,1px);
+    margin: var(--dt-spacings-size-4,4px) var(--dt-spacings-size-0,0) var(--dt-spacings-size-0,0) var(--dt-spacings-size-0,0);
+}
+
+.system-apps .well {
+    margin-bottom: 3px;
+}
+
+.icon-app {
+    width: 50px;
+    height: 45px;
+    border-radius: 2px;
+    max-width: 50px;
+    min-width: 50px;
+    max-height: 45px;
+    min-height: 45px;
+    margin: auto;
+    flex-grow: 1;
+}
+
+.img-icon-app {
+    width: 50px;
+    height: 45px;
+    border-radius: 2px;
+    max-width: 50px;
+    min-width: 50px;
+    max-height: 45px;
+    min-height: 45px;
+}
+
+.system-app {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    min-width: 0px;
+}
+
+.name-app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.icon-connect {
+    font-size: 22px;
+    width: 25px;
+}
+
+.icon-tooltip-detail {
+    font-size: 15px;
+}
 //
 
 .full-round-txt{
